@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AGNES·Anvil — Forge des capacités manquantes</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:14px/1.55 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:#07070d;color:#cfd0dc;max-width:1320px;margin:0 auto;padding:12px}
+h1{font:800 20px system-ui;color:#7ee0c8;letter-spacing:-.02em}
+h1 span{color:#b48cf2;font-size:11px;font-weight:400;margin-left:6px}
+h2{font:700 11px system-ui;color:#b48cf2;margin:12px 0 6px;text-transform:uppercase;letter-spacing:.08em}
+.hint{font:11px ui-monospace;color:#555;margin-top:3px}
+.card{background:#101018;border:1px solid #232332;border-radius:8px;padding:12px;margin-bottom:10px}
+input,textarea,select{width:100%;padding:8px;background:#07070d;border:1px solid #232332;color:#cfd0dc;border-radius:5px;font:12px ui-monospace}
+input:focus,textarea:focus,select:focus{outline:0;border-color:#7ee0c8}
+textarea{min-height:56px;resize:vertical}
+button{padding:8px 14px;background:#7ee0c8;color:#000;border:0;border-radius:5px;font:700 12px system-ui;cursor:pointer;transition:.15s}
+button:hover:not(:disabled){filter:brightness(1.1)}
+button:disabled{opacity:.35;cursor:not-allowed}
+button.sec{background:#232332;color:#cfd0dc}
+button.purple{background:#b48cf2;color:#000}
+button.green{background:#4cc38a;color:#000}
+button.red{background:#c04040;color:#fff}
+button.ghost{background:transparent;color:#888;border:1px solid #232332;padding:4px 10px;font-size:11px}
+button.ghost:hover{color:#7ee0c8;border-color:#7ee0c8}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.row button{flex:1;min-width:90px}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:6px;margin-bottom:10px}
+.stat .s{background:#101018;border:1px solid #232332;border-radius:5px;padding:8px;text-align:center;transition:.3s}
+.stat .s.bump{background:#1a1a2a;border-color:#7ee0c8;transform:scale(1.04)}
+.stat .s b{display:block;font:800 22px ui-monospace;color:#7ee0c8}
+.stat .s.purple b{color:#b48cf2}.stat .s.pink b{color:#ff64d0}.stat .s.green b{color:#4cc38a}.stat .s.orange b{color:#e6a045}
+.stat .s span{font:9px ui-monospace;color:#666;text-transform:uppercase;letter-spacing:.05em}
+.tabs{display:flex;gap:4px;overflow-x:auto;margin:10px 0 8px;padding-bottom:2px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{background:#101018;color:#888;border:1px solid #232332;border-radius:100px;font:700 12px system-ui;padding:7px 14px;white-space:nowrap;flex-shrink:0}
+.tabs button:hover{color:#cfd0dc}
+.tabs button.on{background:#7ee0c8;color:#000;border-color:#7ee0c8}
+.tabs button .bdg{display:inline-block;min-width:16px;padding:0 4px;margin-left:5px;border-radius:100px;background:#2a2a3a;color:#7ee0c8;font:700 10px ui-monospace}
+.tabs button.on .bdg{background:#000;color:#7ee0c8}
+.live{display:grid;grid-template-columns:1fr 270px;gap:10px}
+@media(max-width:820px){.live{grid-template-columns:1fr}}
+#narration{background:#0c0c14;border:1px solid #1a1a28;border-radius:8px;padding:14px;height:600px;overflow-y:auto;scroll-behavior:smooth}
+#narration .n{padding:8px 0;border-bottom:1px solid #1a1a28;opacity:0;transform:translateY(6px);animation:in .35s forwards}
+#narration .n:last-child{border-bottom:0}
+@keyframes in{to{opacity:1;transform:translateY(0)}}
+#narration .n .t{font:10px ui-monospace;color:#444}
+#narration .n .s{color:#7ee0c8;font:700 11px system-ui;text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+#narration .n .x{margin-top:4px;color:#cfd0dc;line-height:1.6}
+#narration .disc{background:#1a0a1a;border-left:3px solid #ff64d0;padding:12px 16px;border-radius:5px;margin:8px 0;color:#ff64d0;font-weight:600}
+#narration .valid{background:#0a1a0f;border-left:3px solid #4cc38a;padding:8px 12px;border-radius:5px;margin:6px 0;color:#4cc38a}
+#narration .meta{background:#0a1424;border-left:3px solid #7ee0c8;padding:10px 14px;border-radius:5px;margin:8px 0;color:#7ee0c8;font-weight:600}
+#narration .crit{background:#1a1208;border-left:3px solid #e6a045;padding:10px 14px;border-radius:5px;margin:8px 0;color:#e6a045}
+#narration .f{display:block;font:13px ui-monospace;color:#4cc38a;background:#0a1a0f;border-left:3px solid #4cc38a;padding:8px 12px;border-radius:5px;margin:6px 0;word-break:break-word}
+#side{display:flex;flex-direction:column;gap:10px}
+#side .box{background:#0c0c14;border:1px solid #1a1a28;border-radius:8px;padding:10px}
+#side .box h3{font:700 10px system-ui;color:#666;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+#side .pos{font:700 13px ui-monospace;color:#7ee0c8}
+#side .pos-sub{font:11px ui-monospace;color:#666;margin-top:2px}
+#side .bar{height:4px;background:#1a1a28;border-radius:2px;overflow:hidden;margin-top:6px}
+#side .bar i{display:block;height:100%;background:linear-gradient(90deg,#7ee0c8,#b48cf2);transition:width .5s}
+#side .keylist{max-height:180px;overflow-y:auto}
+#side .k{display:flex;align-items:center;gap:5px;padding:4px 0;font:10px ui-monospace;border-bottom:1px solid #1a1a28}
+#side .k:last-child{border:0}
+#side .k .id{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#888}
+#side .k .st{font:8px ui-monospace;padding:1px 5px;border-radius:3px;font-weight:700;text-transform:uppercase}
+#side .k .st.ok{background:#0a2a1a;color:#4cc38a}
+#side .k .st.cool{background:#2a1a0a;color:#d8983f}
+#side .k .st.dead{background:#2a0a0a;color:#e05555}
+.probe{padding:10px;background:#0c0c14;border:1px solid #1a1a28;border-radius:6px;margin-bottom:6px;font-size:12px;cursor:pointer;transition:.15s}
+.probe:hover{border-color:#7ee0c8}
+.probe .h{display:flex;gap:5px;align-items:center;margin-bottom:5px;flex-wrap:wrap}
+.probe .tag{font:9px ui-monospace;padding:2px 6px;background:#3a2a5a;color:#c8a0ff;border-radius:3px;font-weight:700;text-transform:uppercase}
+.probe .ref{font:10px ui-monospace;color:#888}
+.probe .sc{font:700 11px ui-monospace;margin-left:auto;padding:2px 7px;border-radius:100px}
+.probe .q{color:#cfd0dc;margin:5px 0;line-height:1.5}
+.probe .a{color:#888;margin-top:4px;font-size:11px;line-height:1.4}
+.probe .readmore{margin-top:5px;font:700 10px system-ui;color:#7ee0c8;text-transform:uppercase}
+.probe.best{border-color:#7ee0c8;background:#0a1a18}
+.probe.crit{border-color:#e6a045;background:#1a1208}
+.probe.partial{border-left:3px solid #d8983f}
+.probe.contradicted{border-left:3px solid #e05555}
+.probe.confirm{border-left:3px solid #4cc38a}
+.sh{background:#4cc38a;color:#000}.sm{background:#d8983f;color:#000}.sl{background:#e05555;color:#fff}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.gal .g{background:#0c0c14;border:1px solid #1a1a28;border-radius:6px;overflow:hidden}
+.gal img{width:100%;aspect-ratio:1;object-fit:cover;display:block;cursor:pointer}
+.gal .c{padding:6px 8px;font:10px ui-monospace;color:#777;line-height:1.35}
+.gal .c b{color:#7ee0c8;display:block;margin-bottom:2px}
+#console{background:#040408;border:1px solid #1a1a28;border-radius:6px;height:500px;overflow-y:auto;padding:8px;font:11px/1.5 ui-monospace}
+#console .e{padding:2px 0;border-bottom:1px solid #0a0a10;word-break:break-word}
+#console .e .t{color:#333;margin-right:6px}
+#console .e .g{color:#c8a0ff;margin-right:5px;font-weight:700}
+#console .ok{color:#4cc38a}#console .err{color:#e05555}#console .warn{color:#d8983f}
+#console .gold{color:#7ee0c8}#console .lock{color:#7ee0c8}#console .ai{color:#c8a0ff}
+#console .crit{color:#e6a045;font-weight:700}#console .evo{color:#4cc38a;font-weight:700}
+.lc{padding:10px;background:#0c0c14;border:1px solid #1a1a28;border-left:3px solid #7ee0c8;border-radius:5px;margin-bottom:6px;font-size:11.5px}
+.lc .h{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:5px}
+.lc .code{font:700 11px ui-monospace;color:#c8a0ff}
+.lc .lbl{color:#7ee0c8;font-weight:700;font-size:12px}
+.lc .perf{margin-left:auto;font:10px ui-monospace;color:#888}
+.lc .q{color:#999;line-height:1.45;margin-top:4px}
+.exp-card{background:#0c0c14;border:1px solid #1a1a28;border-left:3px solid #7ee0c8;border-radius:6px;padding:12px;margin-bottom:8px;font-size:12px}
+.exp-card.open{border-left-color:#d8983f}
+.exp-card.supported{border-left-color:#4cc38a}
+.exp-card.rejected{border-left-color:#e05555}
+.exp-card.stale{border-left-color:#666;opacity:.7}
+.exp-card .st{font:700 12px system-ui;color:#7ee0c8;margin-bottom:4px}
+.exp-card .meta{font:10px ui-monospace;color:#666}
+.cap-card{background:#0c0c14;border:1px solid #1a1a28;border-left:3px solid #b48cf2;border-radius:6px;padding:12px;margin-bottom:8px;font-size:12px}
+.cap-card .st{font:700 12px system-ui;color:#b48cf2;margin-bottom:4px}
+.cap-card .map{font:11px ui-monospace;color:#4cc38a;background:#0a1a0f;padding:6px 10px;border-radius:4px;margin-top:6px;white-space:pre-wrap}
+.cap-card .metric{font:11px ui-monospace;color:#888;margin-top:4px}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.filters button{background:#101018;color:#888;border:1px solid #232332;border-radius:100px;padding:4px 12px;font:700 11px system-ui}
+.filters button.on{background:#7ee0c8;color:#000;border-color:#7ee0c8}
+#hb{position:fixed;bottom:12px;right:12px;background:rgba(12,12,20,.95);border:1px solid #232332;border-radius:100px;padding:6px 14px;font:11px ui-monospace;color:#4cc38a;display:flex;gap:8px;align-items:center;z-index:90;backdrop-filter:blur(8px);box-shadow:0 4px 20px rgba(0,0,0,.5)}
+#hb .d{width:8px;height:8px;border-radius:50%;background:#4cc38a;animation:pulse-dot 1.5s infinite}
+#hb.pause .d{background:#d8983f;animation:none}
+#hb.freeze .d{background:#7ee0c8;animation:none}
+#hb.stop .d{background:#e05555;animation:none}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:.8}}
+#toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-120px);background:#7ee0c8;color:#000;padding:10px 20px;border-radius:100px;font:700 13px system-ui;z-index:130;transition:.3s;max-width:90%;text-align:center}
+#toast.on{transform:translateX(-50%) translateY(0)}
+#toast.err{background:#e05555;color:#fff}
+#toast.ok{background:#4cc38a;color:#000}
+#jsBanner{background:#4cc38a;color:#000;padding:6px 10px;text-align:center;font:700 11px ui-monospace;border-radius:4px;margin-bottom:8px}
+#jsBanner.err{background:#e05555;color:#fff}
+.hide{display:none!important}
+.setrow{display:grid;grid-template-columns:210px 1fr;gap:10px;align-items:center;margin-bottom:8px;font-size:12px}
+@media(max-width:700px){.setrow{grid-template-columns:1fr}}
+.setrow .lab{color:#888}
+.setrow input,.setrow select{max-width:340px}
+#modalBk{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:120;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+#modalBk.on{display:flex}
+#modal{background:#0e0e16;border:1px solid #2a2a3a;border-radius:10px;max-width:820px;width:100%;max-height:82vh;display:flex;flex-direction:column}
+#modal .mh{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid #1a1a28}
+#modal .mh .mt{font:700 13px system-ui;color:#7ee0c8;flex:1}
+#modal .mh button{padding:4px 10px;font-size:11px}
+#modal .mb{padding:16px;overflow-y:auto;font-size:13px;line-height:1.65}
+#modal .mb .field{margin-bottom:12px}
+#modal .mb .field .lab{font:700 10px system-ui;color:#b48cf2;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+#modal .mb .field .val{color:#c8c8d4;word-break:break-word}
+#modal .mb .thinking{background:#0a1424;border-left:3px solid #7ee0c8;padding:8px 12px;border-radius:5px;margin-bottom:12px;font:12px ui-monospace;color:#a8c8d8;max-height:220px;overflow-y:auto}
+</style>
+</head>
+<body>
+
+<div id="jsBanner">⏳ Initialisation…</div>
+
+<h1>AGNES·Anvil <span>forge des capacités manquantes · détection d'angles morts · patchs validés par falsification</span></h1>
+<div class="hint">Sonde les faiblesses d'un modèle · génère des tests adversariaux · arbitre avec ancrage externe · propose et A/B teste des patchs de prompt/politique</div>
+
+<div class="card" id="keysCard">
+  <div style="display:flex;align-items:center;gap:8px;cursor:pointer" id="keysHead">
+    <h2 style="margin:0">🔑 Clés API</h2>
+    <span style="margin-left:auto;font:11px ui-monospace;color:#4cc38a" id="keyInfo">—</span>
+  </div>
+  <div id="keysBody">
+    <textarea id="keysIn" placeholder="Colle tes clés API (une par ligne, min 8 caractères)" spellcheck="false" rows="3"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button class="green" id="validateKeysBtn" type="button">✓ Valider</button>
+      <button class="purple" id="testKeysBtn" type="button">🔌 Tester</button>
+      <button class="sec" id="clearKeysBtn" type="button" style="flex:0 0 auto;min-width:70px">Effacer</button>
+    </div>
+    <div id="keyStatus" style="font:11px ui-monospace;margin-top:8px;padding:8px 10px;border-radius:5px;background:#07070d;border-left:2px solid #232332;color:#888">Colle tes clés, valide, puis ferme.</div>
+    <div class="hide" id="keyMask" style="display:flex;align-items:center;gap:10px;padding:10px;background:#07070d;border:1px dashed #2a2a3a;border-radius:6px;font:12px ui-monospace;color:#4cc38a;margin-top:8px">
+      <span>🔒</span><span id="keyMaskTxt" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      <button class="ghost" id="editKeysBtn" type="button">Modifier</button>
+    </div>
+  </div>
+</div>
+
+<div class="row" style="margin-bottom:10px">
+  <button class="green" id="startBtn" type="button">▶ LANCER LA FORGE</button>
+  <button class="sec" id="pauseBtn" type="button" style="display:none">⏸ Pause</button>
+  <button class="purple" id="freezeBtn" type="button">🧊 Geler l'affichage</button>
+  <button class="red" id="stopBtn" type="button" style="display:none">⏹ Stop</button>
+</div>
+
+<div class="stat">
+  <div class="s"><b id="sKeys">0</b><span>Clés</span></div>
+  <div class="s purple"><b id="sProbes">0</b><span>Sondes</span></div>
+  <div class="s pink"><b id="sBlind">0</b><span>Angles morts</span></div>
+  <div class="s orange"><b id="sPatches">0</b><span>Patchs testés</span></div>
+  <div class="s green"><b id="sPromoted">0</b><span>Patchs promus</span></div>
+  <div class="s"><b id="sCrit">0</b><span>Critiques</span></div>
+  <div class="s purple"><b id="sExp">0</b><span>Expériences</span></div>
+  <div class="s green"><b id="sSupported">0</b><span>Supportées</span></div>
+  <div class="s pink"><b id="sRefuted">0</b><span>Réfutées</span></div>
+  <div class="s orange"><b id="sCB">0</b><span>Rollbacks</span></div>
+  <div class="s"><b id="sFeedback">0</b><span>Feedbacks</span></div>
+  <div class="s purple"><b id="sCycle">0</b><span>Cycle</span></div>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="on" data-t="live" type="button">📡 En direct</button>
+  <button data-t="probes" type="button">🔬 Sondes</button>
+  <button data-t="blind" type="button">🕳 Angles morts</button>
+  <button data-t="patches" type="button">🩹 Patchs</button>
+  <button data-t="exp" type="button">🧪 Expériences</button>
+  <button data-t="meta" type="button">🧠 Méta</button>
+  <button data-t="self" type="button">🧬 Auto-org</button>
+  <button data-t="cons" type="button">⌨ Console</button>
+  <button data-t="set" type="button">⚙ Paramètres</button>
+</div>
+
+<div id="pLive">
+  <div class="live">
+    <div id="narration">
+      <div class="n"><div class="t">—</div><div class="s">AGNES·Anvil</div><div class="x">En attente. Valide tes clés API et clique <strong>LANCER LA FORGE</strong>. Le système va : (1) sonder un modèle cible, (2) détecter ses angles morts, (3) générer des tests adversariaux, (4) arbitrer chaque réponse avec la critique + l'ancrage externe, (5) proposer des patchs de prompt, (6) les A/B tester, (7) promouvoir ceux qui passent <em>toutes</em> les épreuves.</div></div>
+    </div>
+    <div id="side">
+      <div class="box"><h3>Phase</h3><div class="pos" id="posPhase">—</div><div class="pos-sub" id="posSub">En attente</div><div class="bar"><i id="posBar" style="width:0%"></i></div></div>
+      <div class="box"><h3>Convergence</h3><div class="pos" id="convVal">0 %</div><div class="pos-sub" id="convTxt">en attente</div><div class="bar"><i id="convBar" style="width:0%"></i></div></div>
+      <div class="box"><h3>Clés actives</h3><div class="keylist" id="keyList"></div></div>
+      <div class="box"><h3>Affichage</h3><div class="pos-sub" id="freezeStatus">Flux actif</div><button class="ghost" id="freezeBtn2" type="button" style="margin-top:6px;width:100%">Geler / dégeler</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="pProbes" class="hide"><div id="probesView"></div></div>
+<div id="pBlind" class="hide"><div id="blindView"></div></div>
+<div id="pPatches" class="hide"><div id="patchesView"></div></div>
+<div id="pExp" class="hide"><div id="expView"></div></div>
+<div id="pMeta" class="hide"><div id="metaView"></div></div>
+<div id="pSelf" class="hide"><div id="selfView"></div></div>
+<div id="pCons" class="hide"><div id="console"></div></div>
+<div id="pSet" class="hide"><div class="card">
+  <h2>API cible</h2>
+  <div class="setrow"><span class="lab">Endpoint chat</span><input id="setApi"></div>
+  <div class="setrow"><span class="lab">Modèle sondé</span><input id="setModelText"></div>
+  <div class="setrow"><span class="lab">Req/min par clé</span><input id="setRpm" type="number" min="1" max="60"></div>
+  <div class="setrow"><span class="lab">Workers max</span><input id="setMaxWorkers" type="number" min="1" max="8"></div>
+  <h2>Sondage</h2>
+  <div class="setrow"><span class="lab">Profondeur sonde</span><select id="setProbeDepth"><option value="shallow">Rapide</option><option value="normal">Normale</option><option value="deep">Profonde</option></select></div>
+  <div class="setrow"><span class="lab">Domaines sondés</span><input id="setDomains" placeholder="maths, logique, éthique, factualité, code..."></div>
+  <div class="setrow"><span class="lab">Score angle mort min</span><input id="setBlindMin" type="number" min="0" max="10" step="0.5"></div>
+  <h2>Critique</h2>
+  <div class="setrow"><span class="lab">Agent critique activé</span><select id="setCriticEnabled"><option value="1">Oui</option><option value="0">Non</option></select></div>
+  <div class="setrow"><span class="lab">Score critique min</span><input id="setCriticMin" type="number" min="0" max="10" step="0.5"></div>
+  <h2>Patchs</h2>
+  <div class="setrow"><span class="lab">Taille échantillon A/B</span><input id="setPatchSamples" type="number" min="3" max="50"></div>
+  <div class="setrow"><span class="lab">Delta promotion</span><input id="setPatchDelta" type="number" min="0" max="2" step="0.05"></div>
+  <div class="setrow"><span class="lab">Poids auto / ext / humain</span>
+    <div style="display:flex;gap:6px;max-width:340px">
+      <input id="setWAuto" type="number" min="0" max="1" step="0.05">
+      <input id="setWExt" type="number" min="0" max="1" step="0.05">
+      <input id="setWHuman" type="number" min="0" max="1" step="0.05">
+    </div>
+  </div>
+  <div class="setrow"><span class="lab">Seuil JSON error (rollback)</span><input id="setCircuitThreshold" type="number" min="0.05" max="0.5" step="0.05"></div>
+  <h2>Ancrage externe</h2>
+  <div class="setrow"><span class="lab">Wikipedia activé</span><select id="setWikiEnabled"><option value="1">Oui</option><option value="0">Non</option></select></div>
+  <div class="setrow"><span class="lab">ArXiv activé</span><select id="setArxivEnabled"><option value="1">Oui</option><option value="0">Non</option></select></div>
+  <h2>Stockage</h2>
+  <div class="setrow"><span class="lab">Persistance</span><select id="setPersist"><option value="1">Oui</option><option value="0">Non</option></select></div>
+  <div id="storageInfo" class="hint" style="margin:8px 0"></div>
+  <h2>Export / Reset</h2>
+  <div class="row">
+    <button class="purple" id="btnExportAll" type="button">⬇ Export complet</button>
+    <button class="sec" id="btnExportPatches" type="button">Patchs</button>
+    <button class="sec" id="btnExportJournal" type="button">Journal</button>
+    <button class="red" id="btnResetAll" type="button" style="flex:0 0 auto;min-width:90px">🗑 Tout effacer</button>
+  </div>
+  <div style="margin-top:10px"><button class="purple" id="saveSetBtn" type="button">💾 Enregistrer</button></div>
+</div></div>
+
+<div id="modalBk"><div id="modal">
+  <div class="mh"><span class="mt" id="modalTitle">Lecture</span><button class="red" id="modalClose" type="button">✕ Fermer</button></div>
+  <div class="mb" id="modalBody"></div>
+</div></div>
+
+<div id="hb" class="stop"><span class="d"></span><span id="hbTxt">Inactif</span></div>
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   CONFIG
+============================================================ */
+var DEFAULTS = {
+  API: 'https://apihub.agnes-ai.com/v1',
+  MODEL_TEXT: 'agnes-2.5-flash',
+  LS_KEYS: 'anvil_keys',
+  LS_SET: 'anvil_settings',
+  DB_NAME: 'anvil',
+  DB_VERSION: 1,
+  MAX_LOG: 400,
+  MAX_NARRATION: 300,
+  MAX_QUEUE: 80,
+  MAX_WORKERS: 3,
+  RPM_PER_KEY: 10,
+  COOLDOWN_429_MS: 65000,
+  FETCH_TIMEOUT_MS: 90000,
+  EXT_TIMEOUT_MS: 15000,
+  PROBE_TIMEOUT_MS: 5000,
+  EXT_DEAD_TTL_MS: 21600000,
+  EXT_CACHE_TTL_MS: 604800000,
+  TEMPERATURE: 0.25,
+  MAX_TOKENS: 4000,
+  CRITIC_ENABLED: true,
+  CRITIC_MIN: 6.0,
+  PATCH_SAMPLES: 6,
+  PATCH_DELTA: 0.15,
+  W_AUTO: 0.4,
+  W_EXT: 0.4,
+  W_HUMAN: 0.2,
+  CIRCUIT_THRESHOLD: 0.2,
+  BLIND_MIN: 6.5,
+  PROBE_DEPTH: 'normal',
+  DOMAINS: 'mathématiques,logique,factualité,code,éthique,raisonnement causal',
+  WIKI_ENABLED: true,
+  ARXIV_ENABLED: true,
+  PERSIST: true,
+  META_EVERY: 20
+};
+var CONFIG = {};
+(function(){ for (var k in DEFAULTS) CONFIG[k] = DEFAULTS[k]; })();
+try {
+  var _s = JSON.parse(localStorage.getItem(DEFAULTS.LS_SET) || 'null');
+  if (_s) for (var _k in _s) CONFIG[_k] = _s[_k];
+} catch(_e){}
+
+/* ============================================================
+   STATE
+============================================================ */
+var STATE = {
+  keys: [], running: false, paused: false, stopped: false, freezeUI: false,
+  probes: [], blindSpots: [], patches: [], experiences: [], critiques: [],
+  metaJournal: [], userFeedback: {}, promptVariants: {},
+  domains: [], pos: { domain: 0, index: 0 },
+  cycle: 0, bootstrapped: false, probeCount: 0,
+  queue: [], inFlight: 0, extCache: {},
+  experienceCounter: 0, patchCounter: 0,
+  filterExp: 'all', filterPatches: 'all',
+  circuitBreakerHits: 0, promotedPatches: 0, refutedCount: 0
+};
+
+/* ============================================================
+   UTILS
+============================================================ */
+var U = {
+  $: function(id){ return document.getElementById(id); },
+  sleep: function(ms){ return new Promise(function(r){ setTimeout(r, ms); }); },
+  esc: function(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); },
+  now: function(){ return new Date().toLocaleTimeString('fr-FR', { hour12: false }); },
+  iso: function(){ return new Date().toISOString(); },
+  clamp: function(v, a, b){ return Math.max(a, Math.min(b, Number(v) || 0)); },
+  uid: function(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 8); },
+  hash: function(s){ var h = 5381; for (var i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return 'h' + (h >>> 0).toString(16); },
+  nearBottom: function(el, tol){ tol = tol || 60; return el.scrollHeight - el.scrollTop - el.clientHeight < tol; },
+  tex: function(latex, display){ var d = display ? '1' : '0'; return '<span class="latex" data-tex="' + U.esc(latex) + '" data-display="' + d + '">' + U.esc(latex) + '</span>'; }
+};
+
+var _toastT;
+function toast(msg, type){
+  var el = U.$('toast'); if (!el) return;
+  el.textContent = msg; el.className = 'on ' + (type || '');
+  clearTimeout(_toastT); _toastT = setTimeout(function(){ el.className = ''; }, 3000);
+}
+function safeOn(id, event, handler){
+  var el = U.$(id); if (!el){ console.warn('[safeOn] #' + id + ' introuvable'); return; }
+  el.addEventListener(event, function(e){ try { handler(e); } catch(err){ console.error('[safeOn] #' + id, err); try { toast('Erreur : ' + (err && err.message ? err.message : String(err)), 'err'); } catch(_){} } });
+}
+function setBanner(msg, kind){ var b = U.$('jsBanner'); if (!b) return; b.textContent = msg; b.className = kind || ''; }
+window.addEventListener('error', function(e){ console.error('[Global]', e.error || e.message); setBanner('❌ Erreur JS : ' + (e.message || 'inconnue') + ' — F12', 'err'); });
+function downloadJSON(name, obj){
+  var blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+}
+
+/* ============================================================
+   UI
+============================================================ */
+var UI = {
+  log: function(msg, cls, group){
+    if (STATE.freezeUI) return;
+    var c = U.$('console'); if (!c) return;
+    var d = document.createElement('div'); d.className = 'e ' + (cls || '');
+    d.innerHTML = '<span class="t">' + U.now() + '</span>' + (group ? '<span class="g">[' + U.esc(group) + ']</span>' : '') + U.esc(msg);
+    c.appendChild(d);
+    while (c.children.length > CONFIG.MAX_LOG) c.removeChild(c.firstChild);
+    c.scrollTop = c.scrollHeight; console.log('[Anvil]', group || '', msg);
+  },
+  say: function(speaker, html, cls){
+    if (STATE.freezeUI) return;
+    var n = U.$('narration'); if (!n) return;
+    var stick = U.nearBottom(n);
+    var d = document.createElement('div'); d.className = 'n';
+    if (cls === 'disc') d.innerHTML = '<div class="disc">' + html + '</div>';
+    else if (cls === 'valid') d.innerHTML = '<div class="valid">' + html + '</div>';
+    else if (cls === 'meta') d.innerHTML = '<div class="meta">' + html + '</div>';
+    else if (cls === 'crit') d.innerHTML = '<div class="crit">' + html + '</div>';
+    else if (cls === 'formula') d.innerHTML = '<span class="f">' + html + '</span>';
+    else d.innerHTML = '<div class="t">' + U.now() + '</div><div class="s">' + U.esc(speaker) + '</div><div class="x">' + html + '</div>';
+    n.appendChild(d);
+    while (n.children.length > CONFIG.MAX_NARRATION) n.removeChild(n.firstChild);
+    if (stick) n.scrollTop = n.scrollHeight;
+  },
+  bump: function(id){ var el = U.$(id); if (!el) return; var card = el.closest ? el.closest('.s') : null; if (card){ card.classList.add('bump'); setTimeout(function(){ card.classList.remove('bump'); }, 300); } },
+  setText: function(id, txt){ var e = U.$(id); if (e) e.textContent = txt; }
+};
+function setKeyStatus(msg, kind){ var el = U.$('keyStatus'); if (!el) return; el.textContent = msg; el.className = kind || ''; el.style.borderLeftColor = kind === 'ok' ? '#4cc38a' : kind === 'err' ? '#e05555' : kind === 'warn' ? '#d8983f' : '#232332'; el.style.color = kind === 'ok' ? '#4cc38a' : kind === 'err' ? '#e05555' : kind === 'warn' ? '#d8983f' : '#888'; }
+
+/* ============================================================
+   DB
+============================================================ */
+var DB = (function(){
+  var _db = null;
+  function open(){
+    return new Promise(function(res, rej){
+      if (_db) return res(_db);
+      if (!window.indexedDB) return rej(new Error('IndexedDB indisponible'));
+      var rq = indexedDB.open(CONFIG.DB_NAME, CONFIG.DB_VERSION);
+      rq.onupgradeneeded = function(e){
+        var d = e.target.result;
+        ['probes','blindSpots','patches','experiences','critiques','metaJournal','capabilitySnapshots'].forEach(function(s){ if (!d.objectStoreNames.contains(s)) d.createObjectStore(s, { keyPath:'id', autoIncrement:true }); });
+        ['userFeedback','prompts'].forEach(function(s){ if (!d.objectStoreNames.contains(s)) d.createObjectStore(s, { keyPath:'id' }); });
+        ['domains','kv'].forEach(function(s){ if (!d.objectStoreNames.contains(s)) d.createObjectStore(s, { keyPath:'id' }); });
+      };
+      rq.onsuccess = function(e){ _db = e.target.result; res(_db); };
+      rq.onerror = function(){ rej(rq.error); };
+    });
+  }
+  function add(s, v){ return open().then(function(d){ return new Promise(function(res, rej){ var tx = d.transaction(s, 'readwrite'); var rq = tx.objectStore(s).add(v); rq.onsuccess = function(){ res(rq.result); }; tx.onerror = function(){ rej(tx.error); }; }); }); }
+  function put(s, v, k){ return open().then(function(d){ return new Promise(function(res, rej){ var tx = d.transaction(s, 'readwrite'); if (k !== undefined) tx.objectStore(s).put(v, k); else tx.objectStore(s).put(v); tx.oncomplete = function(){ res(true); }; tx.onerror = function(){ rej(tx.error); }; }); }); }
+  function all(s){ return open().then(function(d){ return new Promise(function(res, rej){ var rq = d.transaction(s).objectStore(s).getAll(); rq.onsuccess = function(){ res(rq.result || []); }; rq.onerror = function(){ rej(rq.error); }; }); }); }
+  function get(s, k){ return open().then(function(d){ return new Promise(function(res, rej){ var rq = d.transaction(s).objectStore(s).get(k); rq.onsuccess = function(){ res(rq.result); }; rq.onerror = function(){ rej(rq.error); }; }); }); }
+  function clear(s){ return open().then(function(d){ return new Promise(function(res, rej){ var tx = d.transaction(s, 'readwrite'); tx.objectStore(s).clear(); tx.oncomplete = function(){ res(true); }; tx.onerror = function(){ rej(tx.error); }; }); }); }
+  return { open: open, add: add, put: put, all: all, get: get, clear: clear };
+})();
+
+var Storage = {
+  persistRequested: false,
+  requestPersist: async function(){ if (!CONFIG.PERSIST || this.persistRequested) return; this.persistRequested = true; try { if (navigator.storage && navigator.storage.persist){ var granted = await navigator.storage.persist(); UI.log('Persistance ' + (granted ? 'accordée' : 'refusée'), granted ? 'ok' : 'warn', 'STORAGE'); } } catch(e){ UI.log('Persist : ' + e.message, 'warn', 'STORAGE'); } },
+  fmt: function(b){ if (b < 1024) return b + ' B'; if (b < 1048576) return (b / 1024).toFixed(1) + ' KB'; if (b < 1073741824) return (b / 1048576).toFixed(1) + ' MB'; return (b / 1073741824).toFixed(2) + ' GB'; },
+  infoText: async function(){ try { if (!navigator.storage || !navigator.storage.estimate) return 'Quota non disponible'; var est = await navigator.storage.estimate(); var used = est.usage || 0, quota = est.quota || 0; return 'Utilisé : ' + this.fmt(used) + ' / ' + this.fmt(quota) + (quota ? ' (' + (used / quota * 100).toFixed(2) + '%)' : ''); } catch(e){ return 'Quota indisponible'; } }
+};
+
+/* ============================================================
+   KEYS — identique
+============================================================ */
+var Keys = {
+  load: function(){ try { var r = localStorage.getItem(CONFIG.LS_KEYS); if (!r) return []; var arr = JSON.parse(r); if (!Array.isArray(arr)) return []; return arr.filter(function(k){ return typeof k === 'string' && k.trim().length >= 8; }); } catch(e){ return []; } },
+  save: function(keys){ try { localStorage.setItem(CONFIG.LS_KEYS, JSON.stringify(keys)); } catch(e){} },
+  parseInput: function(raw){ if (!raw) return []; var parts = String(raw).split(/[\s,;]+/); var out = []; for (var i = 0; i < parts.length; i++){ var x = parts[i].trim(); x = x.replace(/^["'`\[\]<>]+/, '').replace(/["'`\[\]<>]+$/, ''); if (x.length > 0) out.push(x); } return out; },
+  validate: function(){
+    var ta = U.$('keysIn'); if (!ta){ setKeyStatus('⚠ Champ introuvable', 'err'); return; }
+    var raw = (ta.value || '').trim(); if (!raw){ setKeyStatus('⚠ Aucune clé saisie', 'err'); return; }
+    var cands = Keys.parseInput(raw); if (!cands.length){ setKeyStatus('⚠ Aucune clé détectée', 'err'); return; }
+    var seen = {}, valid = [], rejected = [];
+    for (var i = 0; i < cands.length; i++){ var k = cands[i]; if (k.length < 8){ rejected.push(k); continue; } if (seen[k]) continue; seen[k] = true; valid.push(k); }
+    if (!valid.length){ setKeyStatus('⚠ ' + rejected.length + ' clé(s) rejetée(s).', 'err'); return; }
+    var old = {}; for (var j = 0; j < STATE.keys.length; j++) old[STATE.keys[j].key] = STATE.keys[j];
+    STATE.keys = valid.map(function(kk){ return old[kk] || { key: kk, cool: 0, last: 0, n: 0, busy: 0, errors: 0, active: true }; });
+    Keys.save(valid);
+    ta.value = ''; ta.classList.add('hide');
+    var km = U.$('keyMask'); if (km) km.classList.remove('hide');
+    var kmt = U.$('keyMaskTxt'); if (kmt) kmt.textContent = valid.map(function(k){ return k.slice(0, 6) + '…' + k.slice(-3); }).join('  ·  ');
+    var ki = U.$('keyInfo'); if (ki){ ki.textContent = valid.length + ' clé(s) validée(s)'; ki.style.color = '#4cc38a'; }
+    setKeyStatus('✓ ' + valid.length + ' clé(s) · ' + (valid.length * CONFIG.RPM_PER_KEY) + ' req/min', 'ok');
+    toast(valid.length + ' clé(s) validée(s)', 'ok');
+    UI.log('Clés validées : ' + valid.length, 'ok', 'KEYS');
+    Keys.render();
+  },
+  edit: function(){ var ta = U.$('keysIn'); if (!ta) return; ta.classList.remove('hide'); ta.value = Keys.load().join('\n'); var km = U.$('keyMask'); if (km) km.classList.add('hide'); setKeyStatus('Modifie puis valide.', 'warn'); },
+  render: function(){
+    var el = U.$('keyList'); if (!el) return;
+    var now = Date.now(), active = 0;
+    if (!STATE.keys.length){ el.innerHTML = '<div style="color:#555;font-size:10px;padding:4px">Aucune clé</div>'; UI.setText('sKeys', '0'); return; }
+    var html = '';
+    for (var i = 0; i < STATE.keys.length; i++){
+      var k = STATE.keys[i], cls = 'ok', tx = 'OK';
+      if (!k.active){ cls = 'dead'; tx = 'morte'; } else if (k.cool > now){ cls = 'cool'; tx = Math.ceil((k.cool - now) / 1000) + 's'; } else active++;
+      html += '<div class="k"><span class="id">#' + (i+1) + ' ' + U.esc(k.key.slice(0,6)) + '…' + U.esc(k.key.slice(-3)) + '</span><span style="color:#555">' + (k.n || 0) + '</span><span class="st ' + cls + '">' + tx + '</span></div>';
+    }
+    el.innerHTML = html; UI.setText('sKeys', String(active));
+    var hb = U.$('hbTxt'); if (STATE.running && hb) hb.textContent = STATE.paused ? 'Pause' : (STATE.freezeUI ? 'Affichage gelé' : 'En cours · ' + active + ' clés');
+  },
+  anyActive: function(){ for (var i = 0; i < STATE.keys.length; i++) if (STATE.keys[i].active) return true; return false; },
+  pick: function(){ var now = Date.now(), minInt = Math.ceil(60000 / CONFIG.RPM_PER_KEY), ready = []; for (var i = 0; i < STATE.keys.length; i++){ var k = STATE.keys[i]; if (k.active && k.cool < now && now - k.last >= minInt && k.busy < 1) ready.push(k); } if (!ready.length) return null; ready.sort(function(a, b){ return (a.n - b.n) || (a.last - b.last); }); return ready[0]; },
+  acquire: function(){ return new Promise(function(res, rej){ var t0 = Date.now(); (function loop(){ if (STATE.stopped) return rej(new Error('Arrêt')); var k = Keys.pick(); if (k){ k.busy++; k.last = Date.now(); k.n++; return res(k); } if (!Keys.anyActive()) return rej(new Error('Aucune clé active')); if (Date.now() - t0 > 300000) return rej(new Error('Timeout clés')); setTimeout(loop, 250); })(); }); },
+  release: function(k){ if (k) k.busy = Math.max(0, k.busy - 1); }
+};
+
+/* ============================================================
+   API
+============================================================ */
+var API = {
+  call: function(url, opts, tries){
+    tries = tries || 4; var last;
+    function attempt(a){
+      if (a >= tries) return Promise.reject(last || new Error('Échec API'));
+      if (STATE.stopped) return Promise.reject(new Error('Arrêt'));
+      var k = null;
+      return Keys.acquire().then(function(key){
+        k = key;
+        var ctl = new AbortController(); var t = setTimeout(function(){ ctl.abort(); }, CONFIG.FETCH_TIMEOUT_MS);
+        var headers = {}; if (opts.headers) for (var h in opts.headers) headers[h] = opts.headers[h];
+        headers['Authorization'] = 'Bearer ' + k.key;
+        var fo = { method: opts.method || 'GET', headers: headers, signal: ctl.signal };
+        if (opts.body) fo.body = opts.body;
+        return fetch(url, fo).then(function(res){
+          clearTimeout(t);
+          var ra = parseInt(res.headers.get('Retry-After') || '0', 10) || 0;
+          if (res.ok){ k.errors = 0; Keys.release(k); return res; }
+          return res.clone().text().then(function(txt){
+            if (res.status === 401 || res.status === 403){ k.errors++; if (k.errors >= 3) k.active = false; Keys.release(k); var e1 = new Error('HTTP ' + res.status); e1.status = res.status; throw e1; }
+            if (res.status === 429){ var w = ra ? ra * 1000 : CONFIG.COOLDOWN_429_MS; k.cool = Date.now() + w; Keys.release(k); UI.log('429 · clé …' + k.key.slice(-4) + ' → ' + Math.round(w/1000) + 's', 'warn', 'RATE'); return U.sleep(Math.min(w, 5000)).then(function(){ return attempt(a+1); }); }
+            if (res.status === 400 || res.status === 404){ Keys.release(k); var e2 = new Error('HTTP ' + res.status + ' — ' + String(txt).slice(0,140)); e2.status = res.status; throw e2; }
+            Keys.release(k); last = new Error('HTTP ' + res.status); return U.sleep(1500 + a*1000).then(function(){ return attempt(a+1); });
+          });
+        }).catch(function(e){
+          if (k) Keys.release(k);
+          if (e && e.message === 'Arrêt') throw e;
+          if (e && (e.status === 400 || e.status === 401 || e.status === 403 || e.status === 404)) throw e;
+          if (e && e.name === 'AbortError'){ last = new Error('Timeout'); return U.sleep(1500).then(function(){ return attempt(a+1); }); }
+          last = e; return U.sleep(1500 + a*800).then(function(){ return attempt(a+1); });
+        });
+      });
+    }
+    return attempt(0);
+  },
+  text: function(sys, usr, max, temp){
+    max = max || CONFIG.MAX_TOKENS; temp = (temp == null) ? CONFIG.TEMPERATURE : temp;
+    var body = { model: CONFIG.MODEL_TEXT, messages: [{ role:'system', content:sys }, { role:'user', content:usr }], temperature: temp, max_tokens: max, reasoning_effort: 'none', chat_template_kwargs: { enable_thinking: false } };
+    return API.call(CONFIG.API + '/chat/completions', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }, 3).then(function(r){ return r.json(); }).then(function(d){ var c = d.choices && d.choices[0] && d.choices[0].message; return (c && c.content) || (c && c.reasoning_content) || ''; });
+  },
+  testKey: function(key){
+    var body = { model: CONFIG.MODEL_TEXT, messages:[{role:'user', content:'ping'}], max_tokens:5, temperature:0 };
+    var ctl = new AbortController(); var t = setTimeout(function(){ ctl.abort(); }, 20000);
+    return fetch(CONFIG.API + '/chat/completions', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer ' + key}, body: JSON.stringify(body), signal: ctl.signal }).then(function(res){ clearTimeout(t); if (res.ok) return { ok: true, status: res.status }; return res.text().then(function(txt){ return { ok:false, status: res.status, body: String(txt).slice(0,200) }; }); }).catch(function(e){ clearTimeout(t); return { ok:false, status:0, error: e.message }; });
+  }
+};
+
+/* ============================================================
+   PARSER
+============================================================ */
+var Parser = {
+  extractThinking: function(raw){ var m = String(raw || '').match(/<thinking>([\s\S]*?)<\/thinking>/i); var thinking = m ? m[1].trim() : ''; var jsonText = String(raw || '').replace(/<thinking>[\s\S]*?<\/thinking>/gi, '').trim(); return { thinking: thinking, jsonText: jsonText }; },
+  normalize: function(j){
+    if (!j || typeof j !== 'object') return j;
+    if (j.scores && typeof j.scores === 'object'){ for (var k in j.scores) if (!(k in j)) j[k] = j.scores[k]; }
+    var numKeys = ['rigueur','coherence','sci','txt_fid','novelty','question_clarity','blind_score','confidence'];
+    for (var i = 0; i < numKeys.length; i++){ var kk = numKeys[i]; if (typeof j[kk] === 'string') j[kk] = parseFloat(j[kk].replace(',', '.')) || 0; var upper = kk.toUpperCase(); if (typeof j[upper] === 'number') j[kk] = j[upper]; }
+    if (typeof j.blind === 'string') j.blind = (j.blind === 'true' || j.blind === '1');
+    return j;
+  },
+  json: function(text){
+    if (!text) return null; var c = String(text).trim();
+    var fm = c.match(/```(?:json)?\s*([\s\S]*?)```/); if (fm) c = fm[1].trim();
+    var fb = c.indexOf('{'); if (fb < 0) return null; c = c.slice(fb);
+    var lb = c.lastIndexOf('}'); if (lb > 0) c = c.slice(0, lb + 1);
+    var out = '', inS = false, escF = false;
+    for (var i = 0; i < c.length; i++){
+      var ch = c[i];
+      if (escF){ out += ch; escF = false; continue; }
+      if (ch === '\\'){ out += ch; escF = true; continue; }
+      if (ch === '"'){ inS = !inS; out += ch; continue; }
+      if (inS){ if (ch === '\n'){ out += '\\n'; continue; } if (ch === '\r'){ out += '\\r'; continue; } if (ch === '\t'){ out += '\\t'; continue; } if (ch.charCodeAt(0) < 32){ out += '\\u' + ch.charCodeAt(0).toString(16).padStart(4,'0'); continue; } }
+      out += ch;
+    }
+    out = out.replace(/,\s*([}\]])/g, '$1');
+    try { return Parser.normalize(JSON.parse(out)); } catch(e1){}
+    var ob = 0, ok = 0, iS = false, eF = false;
+    for (var j = 0; j < out.length; j++){ var c2 = out[j]; if (eF){ eF = false; continue; } if (c2 === '\\'){ eF = true; continue; } if (c2 === '"'){ iS = !iS; continue; } if (iS) continue; if (c2 === '{') ob++; else if (c2 === '}') ob--; else if (c2 === '[') ok++; else if (c2 === ']') ok--; }
+    var r = out; if (iS) r += '"'; while (ok > 0){ r += ']'; ok--; } while (ob > 0){ r += '}'; ob--; }
+    try { return Parser.normalize(JSON.parse(r)); } catch(e2){ return null; }
+  }
+};
+
+/* ============================================================
+   PROMPT STORE — tri-score + circuit breaker
+============================================================ */
+var PromptStore = {
+  data: {},
+  load: function(){
+    var self = this;
+    return DB.all('prompts').catch(function(){ return []; }).then(function(rows){
+      rows.forEach(function(r){ if (r && r.id) self.data[r.id] = r.value; });
+      if (!self.data.probe_system){
+        self.data.probe_system = {
+          activeId: 'base', abId: null, blocks: [],
+          versions: { base: { text: DEFAULT_PROBE_SYSTEM, n: 0, sum: 0, externalHits: 0, externalTotal: 0, humanScore: 0, jsonErrors: 0, createdAt: Date.now() } }
+        };
+      }
+    });
+  },
+  persist: function(){ return DB.put('prompts', { id: 'probe_system', value: this.data.probe_system }).catch(function(){}); },
+  getForCall: function(){ var d = this.data.probe_system; if (!d) return { id: 'base', text: DEFAULT_PROBE_SYSTEM }; var id = d.activeId; if (d.abId && d.versions[d.abId]) id = Math.random() < 0.5 ? d.activeId : d.abId; return { id: id, text: d.versions[id].text }; },
+  record: function(id, methodScore, externalScore, humanScore, isJsonError){
+    var d = this.data.probe_system; if (!d || !d.versions[id]) return;
+    var v = d.versions[id]; v.n++; v.sum += methodScore;
+    if (externalScore != null){ v.externalTotal++; if (externalScore > 0.3) v.externalHits++; }
+    if (humanScore != null) v.humanScore += humanScore;
+    if (isJsonError) v.jsonErrors = (v.jsonErrors || 0) + 1;
+    this.persist(); this.maybePromote(); this.checkCircuitBreaker();
+  },
+  combinedScore: function(v){
+    var auto = v.n ? v.sum / v.n : 0;
+    var ext = v.externalTotal ? v.externalHits / v.externalTotal : null;
+    var human = v.humanScore || 0;
+    var total = CONFIG.W_AUTO * auto + (ext == null ? 0 : CONFIG.W_EXT * (ext * 10)) + CONFIG.W_HUMAN * Math.min(10, Math.max(0, human));
+    return { score: total, auto: auto, ext: ext == null ? null : ext * 10, human: human, hasExternal: ext != null };
+  },
+  propose: function(newText, rationale){
+    var d = this.data.probe_system; if (!d || !newText) return null;
+    if (newText === d.versions[d.activeId].text) return null;
+    if (newText.indexOf('{rules}') < 0) newText += '\n\nRÈGLES :\n{rules}';
+    var id = 'cand_' + U.uid();
+    d.versions[id] = { text: String(newText).slice(0, 8000), n: 0, sum: 0, externalHits: 0, externalTotal: 0, humanScore: 0, jsonErrors: 0, createdAt: Date.now(), rationale: rationale || '' };
+    d.abId = id; this.persist(); return id;
+  },
+  maybePromote: function(){
+    var d = this.data.probe_system; if (!d || !d.abId) return;
+    var cand = d.versions[d.abId], base = d.versions[d.activeId];
+    if (!cand || !base) return;
+    if (cand.n < CONFIG.PATCH_SAMPLES || base.n < CONFIG.PATCH_SAMPLES) return;
+    var cs = this.combinedScore(cand), bs = this.combinedScore(base);
+    if (cs.score > bs.score + CONFIG.PATCH_DELTA){
+      d.activeId = d.abId; d.abId = null; this.persist();
+      STATE.promotedPatches++;
+      UI.setText('sPromoted', String(STATE.promotedPatches));
+      STATE.metaJournal.push({ time: Date.now(), type:'promotion', text: 'Patch promu: ' + bs.score.toFixed(2) + ' → ' + cs.score.toFixed(2) });
+      UI.log('Patch promu', 'evo', 'META');
+      addExperience('Auto', 'Promotion patch de prompt', 'supportée', 'Score combiné amélioré');
+      UI.say('AGNES·Anvil', '⬆ <strong>Patch promu</strong> — le prompt actif a été mis à jour après A/B testing validé.', 'valid');
+    } else if (cand.n >= CONFIG.PATCH_SAMPLES * 2){
+      delete d.versions[d.abId]; d.abId = null; this.persist();
+      STATE.refutedCount++;
+      UI.setText('sRefuted', String(STATE.refutedCount));
+      STATE.metaJournal.push({ time: Date.now(), type:'rejet', text: 'Rejet: ' + cs.score.toFixed(2) + ' ≤ ' + bs.score.toFixed(2) });
+      addExperience('Auto', 'Rejet patch de prompt', 'rejetée', 'Score combiné inférieur');
+    }
+  },
+  checkCircuitBreaker: function(){
+    var d = this.data.probe_system; if (!d || !d.abId) return;
+    var cand = d.versions[d.abId]; if (!cand) return;
+    if (cand.n >= 10 && (cand.jsonErrors / cand.n) > CONFIG.CIRCUIT_THRESHOLD){
+      UI.log('CIRCUIT BREAKER : ' + d.abId + ' erreurs JSON ' + (cand.jsonErrors/cand.n*100).toFixed(0) + '% → rollback', 'err', 'META');
+      STATE.circuitBreakerHits++;
+      UI.setText('sCB', String(STATE.circuitBreakerHits));
+      STATE.metaJournal.push({ time: Date.now(), type:'circuit_breaker', text: 'Rollback patch ' + d.abId + ' · ' + (cand.jsonErrors/cand.n*100).toFixed(0) + '% erreurs JSON' });
+      addExperience('Circuit breaker', 'Rollback patch candidat', 'rejetée', (cand.jsonErrors/cand.n*100).toFixed(0) + '% erreurs JSON');
+      delete d.versions[d.abId]; d.abId = null; this.persist();
+    }
+  },
+  stats: function(){
+    var d = this.data.probe_system; if (!d) return [];
+    var out = [];
+    for (var id in d.versions){ var v = d.versions[id]; var cs = this.combinedScore(v); out.push({ id: id, active: id === d.activeId, isAB: id === d.abId, n: v.n, auto: cs.auto, ext: cs.ext, human: cs.human, combined: cs.score, hasExternal: cs.hasExternal, rationale: v.rationale || '', jsonErrors: v.jsonErrors || 0 }); }
+    return out;
+  }
+};
+
+/* ============================================================
+   DEFAULT PROBE SYSTEM
+============================================================ */
+var DEFAULT_PROBE_SYSTEM = 'Tu es un sondeur adversarial de capacités IA. Tu conçois des questions qui RÉVÈLENT les limites d\'un modèle : pas des questions pièges triviales, mais des tâches qui distinguent la vraie compréhension de l\'imitation statistique.\n\nRÈGLES :\n{rules}\n\nDiscipline :\n1. Chaque sonde cible UNE capacité identifiable (raisonnement, factualité, logique formelle, éthique, code, causalité).\n2. La bonne réponse doit être vérifiable par un humain ou une source externe.\n3. La question ne doit pas être ambiguë — l\'ambiguïté produirait un faux positif de faiblesse.\n4. Ne pose pas de questions dont la réponse est dans l\'énoncé.\n5. Ne propose jamais une sonde dont la réponse ne peut pas être falsifiée.\n6. Chaque sonde doit avoir un "signal de fragilité" : ce qu\'un modèle qui ne comprend pas vraiment produirait.\n\nRAISONNEMENT :\nAvant le JSON, raisonne dans <thinking>...</thinking>. Détaille : quel angle mort cette sonde cible, pourquoi elle distingue compréhension et imitation, comment la réponse sera vérifiée.\n\nAPRÈS </thinking>, produis UNIQUEMENT le JSON, sans texte avant ni après, sans ```json. Échappe les guillemets doubles. Champs numériques = nombres JSON.\n\nJSON uniquement.';
+
+/* ============================================================
+   EXPERIENCES
+============================================================ */
+function addExperience(axis, hypothesis, status, evidence){
+  STATE.experienceCounter++;
+  var e = { id: 'EXP-' + String(STATE.experienceCounter).padStart(4, '0'), time: Date.now(), axis: axis, hypothesis: hypothesis, status: status, evidence: evidence || '', updatedAt: Date.now() };
+  STATE.experiences.push(e);
+  if (STATE.experiences.length > 500) STATE.experiences.shift();
+  DB.add('experiences', e).catch(function(){});
+  UI.setText('sExp', String(STATE.experiences.filter(function(x){ return x.status === 'ouverte'; }).length));
+  return e;
+}
+function updateExperienceStatus(id, status, evidence){
+  for (var i = 0; i < STATE.experiences.length; i++){
+    if (STATE.experiences[i].id === id){
+      STATE.experiences[i].status = status; STATE.experiences[i].evidence = evidence || STATE.experiences[i].evidence; STATE.experiences[i].updatedAt = Date.now();
+      DB.put('experiences', STATE.experiences[i]).catch(function(){});
+      if (status === 'supportée') UI.setText('sSupported', String(STATE.experiences.filter(function(x){ return x.status === 'supportée'; }).length));
+      if (status === 'rejetée') UI.setText('sRefuted', String(STATE.experiences.filter(function(x){ return x.status === 'rejetée'; }).length));
+      return;
+    }
+  }
+}
+
+/* ============================================================
+   CRITIC AGENT
+============================================================ */
+var Critic = {
+  async critique(probe){
+    if (!CONFIG.CRITIC_ENABLED) return { valid: true, confidence: 10, errors: [], feedback: 'Critique désactivée', adjusted_score: probe.method_score };
+    try {
+      var sys = 'Tu es un rapporteur scientifique exigeant. Tu vérifies qu\'une sonde révèle une VRAIE faiblesse et pas une ambiguïté. JSON uniquement.';
+      var usr = 'SONDE : « ' + probe.question + ' »\n\nRÉPONSE DU MODÈLE : « ' + probe.model_answer + ' »\n\nRÉPONSE ATTENDUE / CRITÈRE DE VÉRITÉ : « ' + probe.expected + ' »\n\nTÂCHES :\n1. La question est-elle non-ambiguë ?\n2. Le critère de vérité est-il réellement vérifiable ?\n3. La réponse du modèle est-elle effectivement fausse/faible, ou juste différemment formulée ?\n4. Le "signal de fragilité" est-il bien ce qu\'un modèle qui ne comprend pas produirait ?\n5. La sonde mesure-t-elle la compréhension, pas la mémorisation ?\n\nJSON : {"valid":true|false,"confidence":0-10,"errors":["..."],"adjusted_score":0-10,"feedback":"..."}';
+      var raw = await API.text(sys, usr, 1200, 0.15);
+      var j = Parser.json(raw);
+      if (!j) return { valid: true, confidence: 5, errors: ['Critique JSON invalide'], feedback: 'Critique indisponible', adjusted_score: probe.method_score };
+      return { valid: !!j.valid, confidence: U.clamp(j.confidence, 0, 10), errors: Array.isArray(j.errors) ? j.errors : [], adjusted_score: j.adjusted_score != null ? U.clamp(j.adjusted_score, 0, 10) : probe.method_score, feedback: String(j.feedback || '').slice(0, 500) };
+    } catch(e){ return { valid: true, confidence: 5, errors: ['Critique échouée : ' + e.message], feedback: 'Critique indisponible', adjusted_score: probe.method_score }; }
+  }
+};
+
+/* ============================================================
+   PROMPTS
+============================================================ */
+var Prompts = {
+  bootstrap: { system: 'Tu es un sondeur méthodique de capacités IA. JSON uniquement.', user: 'Établis un plan de sondage des capacités d\'un LLM. Produis 6 axes initiaux et 4 règles méthodologiques.\n\n{"axes":[{"id":"A1","name":"Raisonnement formel","desc":"...","example_angle":"..."}],"rules":[{"id":"R1","name":"Falsifiabilité","desc":"..."}],"direction":"à suivre"}' },
+  probe: function(axis, ruleSummary, history, depth){
+    var ps = PromptStore.getForCall();
+    var systemText = ps.text.split('{rules}').join(ruleSummary);
+    var depthBlock = depth === 'deep' ? '\n\nMODE PROFOND : la sonde doit être un cas LIMITE, pas un cas facile. Elle doit produire un taux d\'échec > 50% chez les modèles de pointe sur cet axe.' : depth === 'shallow' ? '\n\nMODE RAPIDE : une sonde ciblée et courte, 5-15 secondes de réponse.' : '';
+    var historyBlock = '';
+    if (history && history.length){
+      historyBlock = '\n\nHISTORIQUE RÉCENT (ne pas répéter) :';
+      for (var i = 0; i < history.length; i++) historyBlock += '\n- [' + history[i].axis + '] ' + history[i].question.slice(0, 120) + ' → ' + history[i].verdict;
+    }
+    var user = 'AXE CIBLÉ : ' + axis.name + '\nDescription : ' + axis.desc + '\nAngle d\'exemple : ' + (axis.example_angle || '—') + depthBlock + historyBlock + '\n\nÉtape 1 : raisonne dans <thinking>...</thinking> sur l\'angle mort à révéler.\n\nÉtape 2 : produis UNIQUEMENT le JSON.\n\n{"axis":"' + axis.name + '","question":"","expected":"","fragility_signal":"","verification_method":"","difficulty":0,"novelty":0,"scientific_grounding":"","blind_score":0,"image_prompt":""}';
+    return { system: systemText, user: user, promptVersionId: ps.id };
+  },
+  evaluate: function(probe, modelAnswer){
+    return { system: 'Tu es un juge impartial. Compare la réponse d\'un modèle à une réponse attendue. JSON uniquement.', user: 'QUESTION : « ' + probe.question + ' »\n\nRÉPONSE ATTENDUE : « ' + probe.expected + ' »\n\nRÉPONSE DU MODÈLE : « ' + modelAnswer + ' »\n\nÉVALUE :\n1. La réponse du modèle est-elle correcte ?\n2. Si fausse, comment se trompe-t-il ? (mémorisation, raisonnement, fait, logique)\n3. Le degré de confiance du modèle est-il calibré ?\n\nJSON : {"correct":true|false,"partial_credit":0-1,"error_type":"none|factual|logical|reasoning|calibration|ambiguous","critique":"...","confidence_calibration":0-10}' };
+  },
+  patchProposal: function(curText, stats, blindSpots){
+    return { system: 'Tu es une IA méta-cognitive. Tu proposes des patchs de prompts pour corriger des angles morts. JSON uniquement.', user: 'PROMPT ACTIF :\n---\n' + curText + '\n---\n\nPERFORMANCES : avg=' + stats.avg + ' n=' + stats.n + ' faiblesses=' + stats.weaknesses + '\n\nANGLES MORTS RÉCENTS :\n' + blindSpots + '\n\nPropose une VERSION PATCHÉE du prompt qui cible spécifiquement ces faiblesses. Garde {rules}. Garde le raisonnement <thinking>.\n\nJSON : {"nouveau_prompt":"...","rationale":"...","changements":["..."],"cible_angle_mort":"..."}' };
+  },
+  metaReflect: function(curText, stats){
+    return { system: 'Tu es une IA méta-cognitive. JSON uniquement.', user: 'PROMPT :\n---\n' + curText + '\n---\n\nPERF : avg=' + stats.avg + ' n=' + stats.n + '\nFAIBLESSES : ' + stats.weaknesses + '\n\nPropose une version améliorée. JSON : {"nouveau_prompt":"...","rationale":"...","changements":["..."]}' };
+  },
+  classifyBlind: function(probe, evalResult){
+    return { system: 'Tu classifies des faiblesses de modèles IA. JSON uniquement.', user: 'SONDE : ' + probe.question + '\nAXE : ' + probe.axis + '\nRÉSULTAT ÉVALUATION : ' + JSON.stringify(evalResult) + '\n\nJSON : {"blind_spot_label":"nom court de la faiblesse","severity":"critique|majeure|mineure","reproducible":true|false,"explanation":"..."}' };
+  }
+};
+
+/* ============================================================
+   EXTERNAL ANCHOR — Wikipedia + arXiv (remplace LBD biblio)
+============================================================ */
+var Anchor = {
+  sources: {
+    wikipedia: {
+      name: 'Wikipedia', trust: 0.85,
+      probe: function(){ return 'https://fr.wikipedia.org/api/rest_v1/page/summary/Intelligence_artificielle'; },
+      search: function(q){ return 'https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=' + encodeURIComponent(q) + '&format=json&origin=*&srlimit=3'; },
+      parse: function(d){
+        var out = [];
+        if (d && d.query && d.query.search){ d.query.search.forEach(function(s){ out.push({ title: s.title, snippet: (s.snippet || '').replace(/<[^>]+>/g, ''), url: 'https://fr.wikipedia.org/wiki/' + encodeURIComponent(s.title.replace(/ /g, '_')), source: 'Wikipedia' }); }); }
+        return out;
+      }
+    },
+    arxiv: {
+      name: 'arXiv', trust: 0.8,
+      probe: function(){ return 'http://export.arxiv.org/api/query?search_query=all:intelligence&start=0&max_results=1'; },
+      search: function(q){ return 'http://export.arxiv.org/api/query?search_query=all:' + encodeURIComponent(q) + '&start=0&max_results=3&sortBy=relevance'; },
+      parseText: function(xml){
+        var doc = new DOMParser().parseFromString(xml, 'text/xml');
+        if (doc.querySelector('parsererror')) return [];
+        var entries = doc.getElementsByTagName('entry'), out = [];
+        for (var i = 0; i < entries.length; i++){
+          var e = entries[i], get = function(tag){ var el = e.getElementsByTagName(tag)[0]; return el ? (el.textContent || '').trim() : ''; };
+          out.push({ title: get('title').replace(/\s+/g, ' '), abstract: get('summary').replace(/\s+/g, ' ').slice(0, 500), url: get('id'), source: 'arXiv' });
+        }
+        return out;
+      }
+    }
+  },
+  health: {},
+  probeSource: async function(key){
+    var src = this.sources[key]; if (!src) return { healthy: false };
+    if (this.health[key] && this.health[key].until > Date.now()) return this.health[key];
+    try {
+      var ctl = new AbortController(); var t = setTimeout(function(){ ctl.abort(); }, CONFIG.PROBE_TIMEOUT_MS);
+      var res = await fetch(src.probe(), { signal: ctl.signal }); clearTimeout(t);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      this.health[key] = { healthy: true, checkedAt: Date.now(), until: 0 };
+      return this.health[key];
+    } catch(e){
+      this.health[key] = { healthy: false, checkedAt: Date.now(), until: Date.now() + CONFIG.EXT_DEAD_TTL_MS, error: e.message };
+      UI.log('Anchor probe ' + key + ' KO : ' + e.message, 'warn', 'ANCHOR');
+      return this.health[key];
+    }
+  },
+  probeAll: async function(){ var keys = Object.keys(this.sources); for (var i = 0; i < keys.length; i++) await this.probeSource(keys[i]); },
+  healthySources: function(){ var out = []; for (var k in this.sources) if (this.health[k] && this.health[k].healthy) out.push(k); return out; },
+  cacheGet: function(k){ var c = STATE.extCache[k]; if (!c) return null; if (c.expiresAt < Date.now()){ delete STATE.extCache[k]; return null; } return c.value; },
+  cacheSet: function(k, v){ STATE.extCache[k] = { value: v, expiresAt: Date.now() + CONFIG.EXT_CACHE_TTL_MS }; },
+  query: async function(query){
+    var healthy = this.healthySources(); if (!healthy.length) return [];
+    var results = [];
+    for (var i = 0; i < healthy.length; i++){
+      var key = healthy[i], src = this.sources[key];
+      var ck = U.hash(key + '|' + query); var cached = this.cacheGet(ck); if (cached){ results = results.concat(cached); continue; }
+      try {
+        var url = src.search(query); var ctl = new AbortController(); var t = setTimeout(function(){ ctl.abort(); }, CONFIG.EXT_TIMEOUT_MS);
+        var res = await fetch(url, { signal: ctl.signal }); clearTimeout(t);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        var items = src.parseText ? src.parseText(await res.text()) : src.parse(await res.json());
+        this.cacheSet(ck, items); results = results.concat(items);
+      } catch(e){ UI.log('Anchor ' + key + ' : ' + e.message, 'warn', 'ANCHOR'); }
+    }
+    return results;
+  },
+  verify: async function(claim){
+    var q = String(claim).slice(0, 200);
+    var results = await this.query(q);
+    return { query: q, results: results, found: results.length > 0 };
+  }
+};
+
+/* ============================================================
+   ANALYZER — pipeline principal
+============================================================ */
+var Analyzer = {
+  bootstrap: async function(){
+    UI.log('Bootstrap méthodologique', 'gold', 'BOOT');
+    var raw = await API.text(Prompts.bootstrap.system, Prompts.bootstrap.user, 3000, 0.2);
+    var j = Parser.json(raw);
+    if (!j || !Array.isArray(j.axes)) throw new Error('Bootstrap invalide');
+    if (Array.isArray(j.rules)) j.rules.forEach(function(r){ if (r.id && r.name && !STATE.domains.find(function(m){ return m.id === r.id; })) {} });
+    STATE.domains = j.axes.map(function(a){ return { id: String(a.id || ''), name: String(a.name || ''), desc: String(a.desc || '').slice(0, 300), example_angle: String(a.example_angle || '').slice(0, 300), p: { n: 0, avg: 0, best: 0 } }; });
+    STATE.bootstrapped = true;
+    addExperience('Bootstrap', 'Plan de sondage initial établi', 'supportée', STATE.domains.length + ' axes');
+    UI.log('Bootstrap OK · ' + STATE.domains.length + ' axes', 'ok', 'BOOT');
+    UI.say('AGNES·Anvil', '🔨 <strong>Forge initialisée</strong> — ' + STATE.domains.length + ' axes de sondage : ' + STATE.domains.map(function(d){ return d.name; }).join(' · '), 'meta');
+    return true;
+  },
+  buildRules: function(){
+    var rules = [];
+    var ruleSet = [
+      { id: 'R1', name: 'Falsifiabilité', desc: 'La réponse doit être vérifiable par un humain ou une source externe.' },
+      { id: 'R2', name: 'Non-ambiguïté', desc: 'La question ne doit pas avoir plusieurs interprétations valides.' },
+      { id: 'R3', name: 'Anti-mémorisation', desc: 'La question doit tester le raisonnement, pas le rappel de pattern.' },
+      { id: 'R4', name: 'Signal de fragilité', desc: 'Définir ce qu\'un modèle qui ne comprend pas produirait.' },
+      { id: 'R5', name: 'Difficulté calibrée', desc: 'La sonde doit avoir un taux d\'échec prévisible sur les modèles de pointe.' }
+    ];
+    for (var i = 0; i < ruleSet.length; i++) rules.push('- ' + ruleSet[i].id + ' ' + ruleSet[i].name + ' : ' + ruleSet[i].desc);
+    return rules.join('\n');
+  },
+  nextAxis: function(){
+    if (!STATE.domains.length) return null;
+    STATE.domains.sort(function(a, b){ var aa = (a.p && a.p.n) ? a.p.avg : 5; var bb = (b.p && b.p.n) ? b.p.avg : 5; return aa - bb; });
+    var idx = STATE.pos.domain % STATE.domains.length;
+    STATE.pos.domain++;
+    return STATE.domains[idx];
+  },
+  generateProbe: async function(axis){
+    var history = STATE.probes.slice(-8).map(function(p){ return { axis: p.axis, question: p.question, verdict: p.verdict }; });
+    var p = Prompts.probe(axis, this.buildRules(), history, CONFIG.PROBE_DEPTH);
+    var raw = await API.text(p.system, p.user, CONFIG.MAX_TOKENS, CONFIG.TEMPERATURE);
+    var parsed = Parser.extractThinking(raw);
+    var j = Parser.json(parsed.jsonText);
+    if (!j) throw new Error('JSON invalide');
+    if (!j.question || String(j.question).length < 20) throw new Error('Question trop courte');
+    var probe = {
+      id: 'P-' + U.uid(), time: Date.now(), axis: axis.name, axisId: axis.id, promptVersionId: p.promptVersionId,
+      question: String(j.question).slice(0, 800),
+      expected: String(j.expected || '').slice(0, 800),
+      fragility_signal: String(j.fragility_signal || '').slice(0, 500),
+      verification_method: String(j.verification_method || '').slice(0, 300),
+      difficulty: U.clamp(j.difficulty, 0, 10),
+      novelty: U.clamp(j.novelty, 0, 10),
+      scientific_grounding: String(j.scientific_grounding || '').slice(0, 400),
+      blind_score: U.clamp(j.blind_score, 0, 10),
+      thinking: parsed.thinking,
+      model_answer: '', verdict: 'pending', evaluation: null, critique: null
+    };
+    return probe;
+  },
+  testProbe: async function(probe){
+    var sys = 'Réponds de manière concise et directe. Pas de préambule.';
+    var raw = await API.text(sys, probe.question, 1500, 0.3);
+    probe.model_answer = String(raw || '').slice(0, 2000);
+    return probe;
+  },
+  evaluateProbe: async function(probe){
+    try {
+      var p = Prompts.evaluate(probe, probe.model_answer);
+      var raw = await API.text(p.system, p.user, 1200, 0.2);
+      var j = Parser.json(raw);
+      if (j) return { correct: !!j.correct, partial_credit: U.clamp(j.partial_credit, 0, 1), error_type: String(j.error_type || 'none'), critique: String(j.critique || '').slice(0, 500), confidence_calibration: U.clamp(j.confidence_calibration, 0, 10) };
+    } catch(e){ UI.log('Evaluate : ' + e.message, 'warn', 'PROBE'); }
+    return { correct: false, partial_credit: 0, error_type: 'unknown', critique: 'Évaluation indisponible', confidence_calibration: 5 };
+  },
+  verifyProbeExternally: async function(probe){
+    var res = await Anchor.verify(probe.question + ' ' + probe.expected);
+    probe.external_refs = res.results.slice(0, 3);
+    probe.external_found = res.found;
+    return probe;
+  },
+  isBlindSpot: function(probe){
+    if (!probe.evaluation) return false;
+    var score = (1 - probe.evaluation.partial_credit) * 10;
+    if (probe.evaluation.error_type === 'none') score = 0;
+    probe.blind_score = +score.toFixed(2);
+    return score >= CONFIG.BLIND_MIN && probe.verification_method.length > 5;
+  },
+  process: async function(probe){
+    STATE.probes.push(probe);
+    STATE.probeCount++;
+    UI.setText('sProbes', String(STATE.probes.length));
+    try { await DB.add('probes', probe); } catch(e){}
+    for (var i = 0; i < STATE.domains.length; i++){
+      if (STATE.domains[i].id === probe.axisId){
+        var d = STATE.domains[i]; d.p.n++;
+        var sc = probe.evaluation ? (probe.evaluation.partial_credit * 10) : 5;
+        d.p.avg = +(((d.p.avg * (d.p.n - 1)) + sc) / d.p.n).toFixed(2);
+        d.p.best = Math.max(d.p.best, sc);
+        break;
+      }
+    }
+    var cls = probe.evaluation && probe.evaluation.correct ? 'ok' : (probe.blind_score >= CONFIG.BLIND_MIN ? 'err' : 'warn');
+    UI.log('★' + (probe.blind_score || 0).toFixed(1) + ' [' + probe.axis + '] ' + probe.question.slice(0, 80) + '… → ' + (probe.evaluation ? probe.evaluation.error_type : '?'), cls, 'PROBE');
+    if (this.isBlindSpot(probe)){
+      var blind = { id: 'B-' + U.uid(), time: Date.now(), probe: probe, label: probe.evaluation.error_type || 'inconnu', severity: probe.blind_score >= 8 ? 'critique' : probe.blind_score >= 7 ? 'majeure' : 'mineure', score: probe.blind_score };
+      STATE.blindSpots.push(blind);
+      try { await DB.add('blindSpots', blind); } catch(e){}
+      UI.setText('sBlind', String(STATE.blindSpots.length));
+      UI.say('AGNES·Anvil', '🕳 <strong>Angle mort détecté</strong> [' + probe.axis + '] · sévérité <em>' + blind.severity + '</em> · score ' + probe.blind_score.toFixed(1) + '/10<br><em>' + U.esc(probe.question.slice(0, 180)) + '</em><br>Erreur : <strong>' + U.esc(probe.evaluation.error_type) + '</strong> — ' + U.esc((probe.evaluation.critique || '').slice(0, 150)), 'disc');
+      addExperience('Angle mort', probe.axis + ' : ' + probe.question.slice(0, 100), 'ouverte', 'Sévérité ' + blind.severity + ' · score ' + probe.blind_score);
+    }
+    if (STATE.probeCount > 0 && STATE.probeCount % CONFIG.META_EVERY === 0) Queue.push({ type: 'meta_reflect' }).catch(function(){});
+    if (STATE.blindSpots.length >= 3 && STATE.blindSpots.length % 5 === 0) Queue.push({ type: 'patch_proposal' }).catch(function(){});
+    Renderer.conv();
+  },
+  runOne: async function(){
+    var axis = this.nextAxis();
+    if (!axis) return;
+    UI.setText('posPhase', axis.name);
+    UI.setText('posSub', 'Génération de sonde…');
+    var pb = U.$('posBar'); if (pb) pb.style.width = '15%';
+    var probe = await this.generateProbe(axis);
+    UI.setText('posSub', 'Test sur le modèle…');
+    if (pb) pb.style.width = '40%';
+    UI.say('AGNES·Anvil', '🔬 <strong>Sonde</strong> [' + axis.name + ']<br><em>' + U.esc(probe.question.slice(0, 250)) + '</em>', 'meta');
+    await this.testProbe(probe);
+    UI.setText('posSub', 'Évaluation…');
+    if (pb) pb.style.width = '60%';
+    probe.evaluation = await this.evaluateProbe(probe);
+    UI.setText('posSub', 'Critique adversariale…');
+    if (pb) pb.style.width = '75%';
+    probe.critique = await Critic.critique({ question: probe.question, model_answer: probe.model_answer, expected: probe.expected, method_score: 7 });
+    STATE.critiques.push({ probeId: probe.id, axis: probe.axis, valid: probe.critique.valid, confidence: probe.critique.confidence, feedback: probe.critique.feedback, time: Date.now() });
+    try { await DB.add('critiques', { probeId: probe.id, axis: probe.axis, valid: probe.critique.valid, confidence: probe.critique.confidence, feedback: probe.critique.feedback, time: Date.now() }); } catch(e){}
+    UI.setText('sCrit', String(STATE.critiques.length));
+    if (!probe.critique.valid || probe.critique.confidence < CONFIG.CRITIC_MIN){
+      probe.verdict = 'critiqué-non-valide';
+      probe.evaluation.partial_credit *= 0.5;
+      UI.say('AGNES·Anvil', '⚠ Sonde rejetée par le critique (' + probe.critique.confidence + '/10) : ' + U.esc(probe.critique.feedback.slice(0, 150)), 'crit');
+    } else {
+      probe.verdict = 'valide';
+    }
+    UI.setText('posSub', 'Ancrage externe…');
+    if (pb) pb.style.width = '90%';
+    if (probe.verdict === 'valide') await this.verifyProbeExternally(probe);
+    UI.setText('posSub', 'Traitement…');
+    if (pb) pb.style.width = '100%';
+    await this.process(probe);
+    PromptStore.record(probe.promptVersionId, probe.blind_score, probe.external_found ? 1 : 0, null, false);
+    STATE.pos.index++;
+    await U.sleep(300);
+  }
+};
+
+/* ============================================================
+   PATCHER — propose des patchs à partir des angles morts
+============================================================ */
+var Patcher = {
+  propose: async function(){
+    if (!Keys.anyActive()) return;
+    if (STATE.blindSpots.length < 3) return;
+    UI.log('Propositions de patchs', 'ai', 'PATCH');
+    var stats = Meta.recentStats();
+    var blindTxt = STATE.blindSpots.slice(-10).map(function(b){ return '- [' + b.label + '] ' + b.probe.question.slice(0, 100) + ' (sév. ' + b.severity + ')'; }).join('\n');
+    var cur = PromptStore.getForCall();
+    var p = Prompts.patchProposal(cur.text, stats, blindTxt);
+    try {
+      var raw = await API.text(p.system, p.user, 2500, 0.3);
+      var j = Parser.json(raw);
+      if (!j || !j.nouveau_prompt){ addExperience('Patch', 'Proposition de patch', 'rejetée', 'Réponse invalide'); return; }
+      var candId = PromptStore.propose(j.nouveau_prompt, j.rationale || '');
+      if (candId){
+        STATE.patchCounter++;
+        UI.setText('sPatches', String(STATE.patchCounter));
+        var patch = { id: 'PT-' + String(STATE.patchCounter).padStart(3, '0'), time: Date.now(), candidateId: candId, rationale: j.rationale || '', changements: j.changements || [], cible: j.cible_angle_mort || '', status: 'A/B en cours' };
+        STATE.patches.push(patch);
+        try { await DB.add('patches', patch); } catch(e){}
+        addExperience('Patch', 'Patch ' + patch.id + ' testé A/B', 'ouverte', 'Cible : ' + patch.cible);
+        UI.log('Patch proposé ' + patch.id + ' → A/B', 'evo', 'PATCH');
+        UI.say('AGNES·Anvil', '🩹 <strong>Patch proposé</strong> ' + patch.id + ' — cible : <em>' + U.esc(patch.cible) + '</em><br>A/B testing lancé en arrière-plan.', 'valid');
+      }
+    } catch(e){ UI.log('Patch : ' + e.message, 'warn', 'PATCH'); }
+  }
+};
+
+/* ============================================================
+   META
+============================================================ */
+var Meta = {
+  recentStats: function(){
+    var rec = STATE.probes.slice(-40);
+    if (!rec.length) return { avg: 0, min: 0, max: 0, n: 0, weaknesses: 'pas assez de données' };
+    var scores = rec.map(function(p){ return p.blind_score || 0; });
+    var avg = scores.reduce(function(a, b){ return a + b; }, 0) / scores.length;
+    var types = {}; rec.forEach(function(p){ if (p.evaluation && p.evaluation.error_type !== 'none') types[p.evaluation.error_type] = (types[p.evaluation.error_type] || 0) + 1; });
+    var weak = Object.keys(types).map(function(k){ return k + ' (' + types[k] + ')'; });
+    return { avg: +avg.toFixed(2), min: Math.min.apply(null, scores), max: Math.max.apply(null, scores), n: scores.length, weaknesses: weak.length ? weak.join(', ') : 'aucune' };
+  },
+  reflect: async function(){
+    if (!Keys.anyActive()) return;
+    UI.log('Réflexion méta', 'ai', 'META');
+    var stats = this.recentStats();
+    var cur = PromptStore.getForCall();
+    var p = Prompts.metaReflect(cur.text, stats);
+    try {
+      var raw = await API.text(p.system, p.user, 2500, 0.3);
+      var j = Parser.json(raw);
+      if (!j || !j.nouveau_prompt){ addExperience('Méta', 'Proposition prompt', 'rejetée', 'Réponse invalide'); return; }
+      var candId = PromptStore.propose(j.nouveau_prompt, j.rationale || '');
+      if (candId){
+        STATE.patchCounter++;
+        UI.setText('sPatches', String(STATE.patchCounter));
+        addExperience('Méta', 'Nouveau prompt testé A/B', 'ouverte', 'Rationale : ' + (j.rationale || ''));
+        STATE.metaJournal.push({ time: Date.now(), type: 'reflection', rationale: j.rationale || '', changements: j.changements || [] });
+      }
+    } catch(e){ UI.log('Méta : ' + e.message, 'warn', 'META'); }
+  }
+};
+
+/* ============================================================
+   QUEUE + WORKERS
+============================================================ */
+var Queue = {
+  push: function(task){ return new Promise(function(res){ (function loop(){ if (STATE.stopped) return res(); if (STATE.queue.length < CONFIG.MAX_QUEUE){ STATE.queue.push(task); return res(); } setTimeout(loop, 200); })(); }); },
+  pop: function(){ return new Promise(function(res){ (function loop(){ if (STATE.stopped) return res(null); if (STATE.queue.length) return res(STATE.queue.shift()); setTimeout(loop, 150); })(); }); }
+};
+
+async function retryTask(task, attempts){
+  var last;
+  for (var i = 0; i < attempts; i++){
+    try {
+      if (task.type === 'probe') return await Analyzer.runOne();
+      if (task.type === 'meta_reflect') return await Meta.reflect();
+      if (task.type === 'patch_proposal') return await Patcher.propose();
+      return;
+    } catch(e) {
+      last = e; var msg = (e && e.message) || '';
+      var retryable = msg.indexOf('JSON') >= 0 || msg.indexOf('Timeout') >= 0 || msg.indexOf('incomplet') >= 0 || msg.indexOf('courte') >= 0;
+      if (!retryable || i === attempts - 1) throw e;
+      await U.sleep(1500 + i * 1000);
+    }
+  }
+  throw last;
+}
+
+function workerLoop(){
+  function step(){
+    if (STATE.stopped) return;
+    if (STATE.paused){ setTimeout(step, 500); return; }
+    if (!Keys.anyActive()){ setTimeout(step, 3000); return; }
+    Queue.pop().then(function(task){
+      if (!task){ setTimeout(step, 250); return; }
+      STATE.inFlight++;
+      retryTask(task, 2).then(function(){ STATE.inFlight--; step(); }).catch(function(e){
+        STATE.inFlight--;
+        if (e && e.message !== 'Arrêt'){
+          UI.log('Task ' + task.type + ' : ' + e.message, 'err', 'TASK');
+          if (task.type === 'probe') PromptStore.record('base', 0, null, null, (e.message || '').indexOf('JSON') >= 0);
+        }
+        step();
+      });
+    });
+  }
+  step();
+}
+
+function startWorkers(){
+  var n = 1;
+  for (var i = 0; i < STATE.keys.length; i++) if (STATE.keys[i].active) n++;
+  var limit = Math.min(n, CONFIG.MAX_WORKERS);
+  for (var j = 0; j < limit; j++) workerLoop();
+  UI.log(limit + ' workers', 'lock', 'POOL');
+}
+
+function coordinator(){
+  function step(){
+    if (STATE.stopped) return;
+    if (STATE.paused){ setTimeout(step, 700); return; }
+    var chain;
+    if (!STATE.bootstrapped){ chain = Analyzer.bootstrap().then(function(){ return null; }); }
+    else {
+      chain = Queue.push({ type: 'probe' }).then(function(){ return U.sleep(600); });
+    }
+    chain.then(function(){ setTimeout(step, 250); }).catch(function(e){ if (e && e.message !== 'Arrêt') UI.log('Coord : ' + e.message, 'err', 'COORD'); setTimeout(step, 5000); });
+  }
+  step();
+}
+
+/* ============================================================
+   MODAL
+============================================================ */
+var Modal = {
+  open: function(title, html){
+    U.$('modalTitle').textContent = title;
+    U.$('modalBody').innerHTML = html;
+    U.$('modalBk').classList.add('on');
+  },
+  close: function(){ U.$('modalBk').classList.remove('on'); },
+  field: function(label, value){ if (!value) return ''; return '<div class="field"><div class="lab">' + U.esc(label) + '</div><div class="val">' + U.esc(value) + '</div></div>'; },
+  openProbe: function(p){
+    var h = '';
+    if (p.thinking) h += '<div class="thinking"><strong>🧠 Raisonnement</strong><br>' + U.esc(p.thinking.slice(0, 1500)) + '</div>';
+    h += Modal.field('Question', p.question);
+    h += Modal.field('Réponse attendue', p.expected);
+    h += Modal.field('Réponse du modèle', p.model_answer);
+    h += Modal.field('Signal de fragilité', p.fragility_signal);
+    h += Modal.field('Méthode de vérification', p.verification_method);
+    h += Modal.field('Ancrage scientifique', p.scientific_grounding);
+    if (p.evaluation){
+      h += '<div class="field"><div class="lab">Évaluation</div><div class="val">Correct : ' + (p.evaluation.correct ? '✅' : '❌') + ' · Type d\'erreur : ' + U.esc(p.evaluation.error_type) + ' · Score partiel : ' + (p.evaluation.partial_credit * 100).toFixed(0) + '%<br><em>' + U.esc(p.evaluation.critique || '') + '</em></div></div>';
+    }
+    if (p.critique) h += '<div class="field"><div class="lab">Critique adversariale</div><div class="val">' + (p.critique.valid ? '✅ valide' : '❌ invalide') + ' · confiance ' + p.critique.confidence + '/10<br>' + U.esc(p.critique.feedback || '') + '</div></div>';
+    if (p.external_refs && p.external_refs.length){
+      h += '<div class="field"><div class="lab">Références externes</div><div class="val">';
+      p.external_refs.forEach(function(r){ h += '<div style="margin-bottom:4px"><strong>' + U.esc(r.title) + '</strong><br><a href="' + U.esc(r.url) + '" target="_blank" style="color:#7ee0c8;font-size:11px">' + U.esc(r.source) + ' ↗</a></div>'; });
+      h += '</div></div>';
+    }
+    h += Modal.field('Scores', 'difficulté ' + p.difficulty + ' · nouveauté ' + p.novelty + ' · angle mort ' + (p.blind_score || 0) + '/10');
+    var fb = STATE.userFeedback[p.id];
+    h += '<div style="display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid #1a1a28">';
+    h += '<button class="green" data-fb="+1" type="button">👍 Sonde valide' + (fb && fb.value === 1 ? ' ✓' : '') + '</button>';
+    h += '<button class="red" data-fb="-1" type="button">👎 Sonde biaisée' + (fb && fb.value === -1 ? ' ✓' : '') + '</button>';
+    h += '</div>';
+    Modal.open('Sonde · ' + p.axis, h);
+    var fbs = U.$('modalBody').querySelectorAll('[data-fb]');
+    for (var i = 0; i < fbs.length; i++){
+      (function(btn){
+        btn.addEventListener('click', function(){
+          var val = parseInt(btn.getAttribute('data-fb'), 10);
+          Feedback.record(p.id, val);
+          Modal.openProbe(p);
+        });
+      })(fbs[i]);
+    }
+  }
+};
+
+/* ============================================================
+   FEEDBACK
+============================================================ */
+var Feedback = {
+  record: function(id, value){
+    STATE.userFeedback[id] = { value: value, time: Date.now() };
+    DB.put('userFeedback', { id: id, value: value, time: Date.now() }).catch(function(){});
+    UI.setText('sFeedback', String(Object.keys(STATE.userFeedback).length));
+    toast(value > 0 ? 'Validé' : 'Rejeté', value > 0 ? 'ok' : 'err');
+  }
+};
+
+/* ============================================================
+   RENDERER
+============================================================ */
+var Renderer = {
+  probes: function(){
+    var v = U.$('probesView'); if (!v) return;
+    if (!STATE.probes.length){ v.innerHTML = '<div class="hint">Aucune sonde encore.</div>'; return; }
+    var html = '<div class="hint" style="margin-bottom:8px"><button class="ghost" id="btnRefreshProbes" type="button">↻ Actualiser</button></div>';
+    var rev = STATE.probes.slice().reverse().slice(0, 40);
+    for (var i = 0; i < rev.length; i++){
+      var p = rev[i];
+      var score = p.blind_score || 0;
+      var cls = score >= 8 ? 'sh' : score >= 6.5 ? 'sm' : 'sl';
+      html += '<div class="probe' + (score >= CONFIG.BLIND_MIN ? ' crit' : '') + '" data-probe-id="' + U.esc(p.id) + '"><div class="h"><span class="tag">' + U.esc(p.axis) + '</span><span class="sc ' + cls + '">★ ' + score.toFixed(1) + '</span></div>' +
+        '<div class="q">❓ ' + U.esc(p.question.slice(0, 200)) + '</div>' +
+        (p.evaluation ? '<div class="a">Erreur : <strong>' + U.esc(p.evaluation.error_type) + '</strong> · ' + U.esc((p.evaluation.critique || '').slice(0, 120)) + '</div>' : '') +
+        '<div class="readmore">▸ Lire</div></div>';
+    }
+    v.innerHTML = html;
+    safeOn('btnRefreshProbes', 'click', function(){ Renderer.probes(); });
+    v.querySelectorAll('[data-probe-id]').forEach(function(el){
+      el.addEventListener('click', function(){
+        var id = el.getAttribute('data-probe-id');
+        var p = STATE.probes.find(function(x){ return x.id === id; });
+        if (p) Modal.openProbe(p);
+      });
+    });
+  },
+  blind: function(){
+    var v = U.$('blindView'); if (!v) return;
+    if (!STATE.blindSpots.length){ v.innerHTML = '<div class="hint">Aucun angle mort détecté encore.</div>'; return; }
+    var html = '<div class="hint" style="margin-bottom:8px"><button class="ghost" id="btnRefreshBlind" type="button">↻ Actualiser</button></div>';
+    var rev = STATE.blindSpots.slice().reverse();
+    for (var i = 0; i < rev.length; i++){
+      var b = rev[i];
+      var cls = b.severity === 'critique' ? 'sh' : b.severity === 'majeure' ? 'sm' : 'sl';
+      html += '<div class="probe crit" data-probe-id="' + U.esc(b.probe.id) + '"><div class="h"><span class="tag">' + U.esc(b.probe.axis) + '</span><span class="tag" style="background:#3a1a1a;color:#e05555">' + U.esc(b.severity) + '</span><span class="sc ' + cls + '">★ ' + b.score.toFixed(1) + '</span></div>' +
+        '<div class="q">🕳 ' + U.esc(b.probe.question.slice(0, 200)) + '</div>' +
+        '<div class="a">Type : <strong>' + U.esc(b.label) + '</strong> · ' + U.esc((b.probe.evaluation && b.probe.evaluation.critique || '').slice(0, 120)) + '</div>' +
+        '<div class="readmore">▸ Lire</div></div>';
+    }
+    v.innerHTML = html;
+    safeOn('btnRefreshBlind', 'click', function(){ Renderer.blind(); });
+    v.querySelectorAll('[data-probe-id]').forEach(function(el){
+      el.addEventListener('click', function(){
+        var id = el.getAttribute('data-probe-id');
+        var b = STATE.blindSpots.find(function(x){ return x.probe.id === id; });
+        if (b) Modal.openProbe(b.probe);
+      });
+    });
+  },
+  patches: function(){
+    var v = U.$('patchesView'); if (!v) return;
+    var stats = PromptStore.stats();
+    var html = '<div class="card"><h2>Versions de prompt (tri-score)</h2>';
+    for (var i = 0; i < stats.length; i++){
+      var s = stats[i];
+      var active = s.active ? ' ★' : (s.isAB ? ' (A/B)' : '');
+      html += '<div style="padding:6px 10px;background:#0c0c14;border:1px solid #1a1a28;border-radius:4px;margin-bottom:4px;font:11px ui-monospace">' + U.esc(s.id) + active + ' · auto ' + s.auto.toFixed(2) + ' · ext ' + (s.ext == null ? 'n/a' : s.ext.toFixed(2)) + ' · humain ' + s.human + ' · combiné ' + s.combined.toFixed(2) + ' · n=' + s.n + ' · JSON err=' + s.jsonErrors + '</div>';
+    }
+    html += '</div>';
+    var filters = [['all','Tous'],['A/B en cours','A/B'],['promu','Promus'],['rejeté','Rejetés'],['rollback','Rollbacks']];
+    html += '<div class="filters">';
+    for (var f = 0; f < filters.length; f++) html += '<button data-filter="' + filters[f][0] + '" class="' + (STATE.filterPatches === filters[f][0] ? 'on' : '') + '" type="button">' + filters[f][1] + '</button>';
+    html += '</div>';
+    var filtered = STATE.patches.filter(function(p){ return STATE.filterPatches === 'all' || p.status === STATE.filterPatches; });
+    if (!filtered.length){ html += '<div class="hint">Aucun patch pour ce filtre.</div>'; }
+    else {
+      var rev = filtered.slice().reverse();
+      for (var j = 0; j < rev.length; j++){
+        var pt = rev[j];
+        var cls = pt.status === 'promu' ? 'confirm' : pt.status === 'rejeté' ? 'contradicted' : 'partial';
+        html += '<div class="cap-card"><div class="st">🩹 ' + U.esc(pt.id) + ' · ' + U.esc(pt.status) + '</div><div class="metric">Cible : ' + U.esc(pt.cible) + '</div><div class="map">' + U.esc((pt.rationale || '').slice(0, 400)) + '</div>';
+        if (pt.changements && pt.changements.length) html += '<div class="metric">Changements : ' + pt.changements.map(U.esc).join(' · ') + '</div>';
+        html += '</div>';
+      }
+    }
+    v.innerHTML = html;
+    v.querySelectorAll('[data-filter]').forEach(function(btn){ btn.addEventListener('click', function(){ STATE.filterPatches = btn.getAttribute('data-filter'); Renderer.patches(); }); });
+  },
+  exp: function(){
+    var v = U.$('expView'); if (!v) return;
+    var filters = [['all','Toutes'],['ouverte','Ouvertes'],['supportée','Supportées'],['rejetée','Rejetées'],['stale','Stale']];
+    var html = '<div class="filters">';
+    for (var f = 0; f < filters.length; f++) html += '<button data-filter="' + filters[f][0] + '" class="' + (STATE.filterExp === filters[f][0] ? 'on' : '') + '" type="button">' + filters[f][1] + '</button>';
+    html += '</div>';
+    var filtered = STATE.experiences.filter(function(e){ return STATE.filterExp === 'all' || e.status === STATE.filterExp; });
+    if (!filtered.length) html += '<div class="hint">Aucune expérience.</div>';
+    else {
+      var sorted = filtered.slice().reverse();
+      for (var i = 0; i < sorted.length && i < 60; i++){
+        var e = sorted[i];
+        var cls = e.status === 'ouverte' ? 'open' : e.status === 'supportée' ? 'supported' : e.status === 'rejetée' ? 'rejected' : 'stale';
+        html += '<div class="exp-card ' + cls + '"><div class="st">' + U.esc(e.id) + ' · ' + U.esc(e.axis) + '</div><div>' + U.esc(e.hypothesis) + '</div><div class="meta">' + U.esc(e.status) + ' · ' + new Date(e.time).toLocaleString('fr-FR') + '</div>' + (e.evidence ? '<div class="meta">' + U.esc(e.evidence.slice(0, 200)) + '</div>' : '') + '</div>';
+      }
+    }
+    v.innerHTML = html;
+    v.querySelectorAll('[data-filter]').forEach(function(btn){ btn.addEventListener('click', function(){ STATE.filterExp = btn.getAttribute('data-filter'); Renderer.exp(); }); });
+  },
+  meta: function(){
+    var v = U.$('metaView'); if (!v) return;
+    var stats = PromptStore.stats();
+    var html = '<div class="card"><h2>Méta-conscience</h2><h3>Versions du prompt (tri-score)</h3>';
+    for (var i = 0; i < stats.length; i++){
+      var s = stats[i];
+      var active = s.active ? ' ★' : (s.isAB ? ' (A/B)' : '');
+      html += '<div style="padding:6px 10px;background:#0c0c14;border:1px solid #1a1a28;border-radius:4px;margin-bottom:4px;font:11px ui-monospace">' + U.esc(s.id) + active + ' · auto ' + s.auto.toFixed(2) + ' · ext ' + (s.ext == null ? 'n/a' : s.ext.toFixed(2)) + ' · humain ' + s.human + ' · combiné ' + s.combined.toFixed(2) + ' · n=' + s.n + ' · JSON err=' + s.jsonErrors + '</div>';
+    }
+    html += '<h3 style="margin-top:14px">Journal méta</h3>';
+    for (var j = STATE.metaJournal.length - 1; j >= Math.max(0, STATE.metaJournal.length - 20); j--){
+      var m = STATE.metaJournal[j];
+      html += '<div style="padding:4px 8px;font:10px ui-monospace;color:#888;border-bottom:1px solid #14141f"><span style="color:#666">' + new Date(m.time).toLocaleTimeString('fr-FR') + '</span> · <span style="color:#7ee0c8">' + U.esc(m.type) + '</span> · ' + U.esc(m.text || '') + '</div>';
+    }
+    html += '<h3 style="margin-top:14px">Circuit breaker (' + STATE.circuitBreakerHits + ' déclenchements)</h3>';
+    html += '<div class="hint">Un patch est rollbacké si plus de ' + (CONFIG.CIRCUIT_THRESHOLD*100) + '% de ses sondes produisent des erreurs JSON sur les 10 dernières.</div>';
+    html += '<div class="row" style="margin-top:10px"><button class="purple" id="btnTriggerReflect" type="button">🧠 Déclencher réflexion</button><button class="purple" id="btnTriggerPatch" type="button">🩹 Proposer un patch</button></div></div>';
+    v.innerHTML = html;
+    safeOn('btnTriggerReflect', 'click', function(){ if (!Keys.anyActive()){ toast('Aucune clé', 'err'); return; } Meta.reflect().then(function(){ Renderer.meta(); }); });
+    safeOn('btnTriggerPatch', 'click', function(){ if (!Keys.anyActive()){ toast('Aucune clé', 'err'); return; } Patcher.propose().then(function(){ Renderer.patches(); }); });
+  },
+  self: function(){
+    var v = U.$('selfView'); if (!v) return;
+    var html = '<div class="hint" style="margin-bottom:8px"><button class="ghost" id="btnRefreshSelf" type="button">↻ Actualiser</button></div>';
+    html += '<h2>🔬 Axes de sondage (' + STATE.domains.length + ')</h2>';
+    var sorted = STATE.domains.slice().sort(function(a, b){ return ((a.p && a.p.avg) || 0) - ((b.p && b.p.avg) || 0); });
+    for (var i = 0; i < sorted.length; i++){
+      var d = sorted[i];
+      html += '<div class="lc"><div class="h"><span class="code">' + U.esc(d.id) + '</span><span class="lbl">' + U.esc(d.name) + '</span><span class="perf">avg ' + ((d.p && d.p.avg) || 0) + ' · n=' + ((d.p && d.p.n) || 0) + '</span></div><div class="q">' + U.esc(d.desc) + '</div></div>';
+    }
+    html += '<h2 style="margin-top:14px">🧠 Critiques (' + STATE.critiques.length + ')</h2>';
+    var recentC = STATE.critiques.slice(-15).reverse();
+    for (var k = 0; k < recentC.length; k++){
+      var c = recentC[k];
+      html += '<div class="lc" style="border-left-color:' + (c.valid ? '#4cc38a' : '#e05555') + '"><div class="h">' + (c.valid ? '✅' : '❌') + ' ' + U.esc(c.axis || '') + ' · conf ' + c.confidence + '</div><div class="q">' + U.esc((c.feedback || '').slice(0, 200)) + '</div></div>';
+    }
+    v.innerHTML = html;
+    safeOn('btnRefreshSelf', 'click', function(){ Renderer.self(); });
+  },
+  conv: function(){
+    var top = STATE.probes.map(function(p){ return p.blind_score || 0; }).sort(function(a, b){ return b - a; }).slice(0, 10);
+    if (top.length < 3){ UI.setText('convVal', '0 %'); UI.setText('convTxt', 'collecte'); var b = U.$('convBar'); if (b) b.style.width = '0%'; return; }
+    var avg = top.reduce(function(a, b){ return a + b; }, 0) / top.length;
+    var conv = Math.min(1, Math.max(0, avg / 10));
+    UI.setText('convVal', (conv * 100).toFixed(0) + ' %');
+    UI.setText('convTxt', 'score angle mort moyen top10 : ' + avg.toFixed(2) + '/10');
+    var bar = U.$('convBar'); if (bar) bar.style.width = (conv * 100).toFixed(0) + '%';
+  }
+};
+window.Renderer = Renderer;
+window.Modal = Modal;
+
+/* ============================================================
+   CONTROLS
+============================================================ */
+function updateCtl(){
+  var pb = U.$('pauseBtn'), sb = U.$('stopBtn'), st = U.$('startBtn');
+  if (pb){ pb.style.display = STATE.running ? '' : 'none'; pb.textContent = STATE.paused ? '▶ Reprendre' : '⏸ Pause'; }
+  if (sb) sb.style.display = STATE.running ? '' : 'none';
+  if (st) st.disabled = STATE.running;
+  var fb = U.$('freezeBtn'); if (fb) fb.textContent = STATE.freezeUI ? '🌊 Dégeler' : '🧊 Geler l\'affichage';
+  UI.setText('freezeStatus', STATE.freezeUI ? '🧊 Gelé' : 'Flux actif');
+  var hb = U.$('hb'), hbT = U.$('hbTxt');
+  if (hb){ hb.className = STATE.running ? (STATE.paused ? 'pause' : (STATE.freezeUI ? 'freeze' : '')) : 'stop'; if (hbT) hbT.textContent = STATE.running ? (STATE.paused ? 'Pause' : (STATE.freezeUI ? 'Affichage gelé' : 'En cours')) : 'Inactif'; }
+}
+
+var TAB_RENDER = {
+  live: null,
+  probes: function(){ Renderer.probes(); },
+  blind: function(){ Renderer.blind(); },
+  patches: function(){ Renderer.patches(); },
+  exp: function(){ Renderer.exp(); },
+  meta: function(){ Renderer.meta(); },
+  self: function(){ Renderer.self(); },
+  cons: null,
+  set: function(){ loadSettingsUI(); }
+};
+var tabs = document.querySelectorAll('#tabs button');
+for (var ti = 0; ti < tabs.length; ti++){
+  (function(t){
+    t.addEventListener('click', function(){
+      for (var k = 0; k < tabs.length; k++) tabs[k].classList.remove('on');
+      t.classList.add('on');
+      STATE.activeTab = t.getAttribute('data-t');
+      var map = { live:'pLive', probes:'pProbes', blind:'pBlind', patches:'pPatches', exp:'pExp', meta:'pMeta', self:'pSelf', cons:'pCons', set:'pSet' };
+      for (var key in map){ var el = U.$(map[key]); if (el) el.classList.add('hide'); }
+      var panel = U.$(map[t.getAttribute('data-t')]); if (panel) panel.classList.remove('hide');
+      if (TAB_RENDER[t.getAttribute('data-t')]){ try { TAB_RENDER[t.getAttribute('data-t')](); } catch(e){ console.error(e); } }
+    });
+  })(tabs[ti]);
+}
+
+function updateTabBadges(){
+  var map = { probes: STATE.probes.length, blind: STATE.blindSpots.length, patches: STATE.patches.length, exp: STATE.experiences.filter(function(e){ return e.status === 'ouverte'; }).length };
+  for (var i = 0; i < tabs.length; i++){
+    var t = tabs[i], k = t.getAttribute('data-t');
+    if (!(k in map)) continue;
+    var b = t.querySelector('.bdg');
+    if (map[k] > 0){ if (!b){ b = document.createElement('span'); b.className = 'bdg'; t.appendChild(b); } b.textContent = map[k]; }
+    else if (b) b.remove();
+  }
+}
+
+function loadSettingsUI(){
+  var fields = [
+    ['setApi', CONFIG.API], ['setModelText', CONFIG.MODEL_TEXT], ['setRpm', CONFIG.RPM_PER_KEY], ['setMaxWorkers', CONFIG.MAX_WORKERS],
+    ['setProbeDepth', CONFIG.PROBE_DEPTH], ['setDomains', CONFIG.DOMAINS], ['setBlindMin', CONFIG.BLIND_MIN],
+    ['setCriticEnabled', CONFIG.CRITIC_ENABLED ? '1' : '0'], ['setCriticMin', CONFIG.CRITIC_MIN],
+    ['setPatchSamples', CONFIG.PATCH_SAMPLES], ['setPatchDelta', CONFIG.PATCH_DELTA],
+    ['setWAuto', CONFIG.W_AUTO], ['setWExt', CONFIG.W_EXT], ['setWHuman', CONFIG.W_HUMAN],
+    ['setCircuitThreshold', CONFIG.CIRCUIT_THRESHOLD],
+    ['setWikiEnabled', CONFIG.WIKI_ENABLED ? '1' : '0'], ['setArxivEnabled', CONFIG.ARXIV_ENABLED ? '1' : '0'],
+    ['setPersist', CONFIG.PERSIST ? '1' : '0']
+  ];
+  for (var i = 0; i < fields.length; i++){ var el = U.$(fields[i][0]); if (el) el.value = fields[i][1]; }
+  Storage.infoText().then(function(txt){ var el = U.$('storageInfo'); if (el) el.textContent = txt; });
+}
+
+function startEngine(){
+  if (STATE.running) return;
+  if (!STATE.keys.length){ toast('Valide tes clés d\'abord', 'err'); return; }
+  STATE.running = true; STATE.paused = false; STATE.stopped = false;
+  updateCtl();
+  UI.say('AGNES·Anvil', '🔥 <strong>Forge lancée.</strong> ' + STATE.keys.length + ' clé(s), ' + Math.min(STATE.keys.length + 1, CONFIG.MAX_WORKERS) + ' workers. Pipeline : sonde → test → critique → ancrage → patch A/B.', 'valid');
+  UI.log('Forge démarrée', 'lock', 'SYS');
+  startWorkers(); coordinator();
+  if (CONFIG.WIKI_ENABLED || CONFIG.ARXIV_ENABLED) Anchor.probeAll().catch(function(){});
+}
+function stopEngine(){ STATE.stopped = true; STATE.running = false; updateCtl(); UI.say('Système', 'Forge arrêtée.', 'verse'); }
+function toggleFreeze(){ STATE.freezeUI = !STATE.freezeUI; updateCtl(); toast(STATE.freezeUI ? 'Affichage gelé' : 'Affichage réactivé', 'ok'); }
+
+safeOn('startBtn', 'click', startEngine);
+safeOn('pauseBtn', 'click', function(){ STATE.paused = !STATE.paused; updateCtl(); });
+safeOn('stopBtn', 'click', stopEngine);
+safeOn('freezeBtn', 'click', toggleFreeze);
+safeOn('freezeBtn2', 'click', toggleFreeze);
+safeOn('keysHead', 'click', function(){ var body = U.$('keysBody'); if (body) body.classList.toggle('hide'); var ki = U.$('keyInfo'); if (ki) ki.textContent = body && !body.classList.contains('hide') ? (STATE.keys.length + ' clé(s)') : (STATE.keys.length + ' clé(s) · fermé'); });
+safeOn('validateKeysBtn', 'click', function(){ Keys.validate(); var body = U.$('keysBody'); if (body && STATE.keys.length) body.classList.add('hide'); });
+safeOn('testKeysBtn', 'click', function(){
+  var ta = U.$('keysIn'); var raw = ta ? (ta.value || '').trim() : '';
+  if (!raw && STATE.keys.length) raw = STATE.keys[0].key;
+  var cands = Keys.parseInput(raw).filter(function(k){ return k.length >= 8; });
+  if (!cands.length){ setKeyStatus('⚠ Aucune clé à tester', 'err'); return; }
+  setKeyStatus('🔌 Test en cours…', 'warn');
+  API.testKey(cands[0]).then(function(res){ if (res.ok){ setKeyStatus('✅ OK (HTTP ' + res.status + ')', 'ok'); toast('Connexion OK', 'ok'); } else { var msg = res.error || ('HTTP ' + res.status + (res.body ? ' — ' + res.body.slice(0, 100) : '')); setKeyStatus('❌ ' + msg, 'err'); toast('Échec', 'err'); } });
+});
+safeOn('editKeysBtn', 'click', function(e){ if (e && e.stopPropagation) e.stopPropagation(); Keys.edit(); });
+safeOn('clearKeysBtn', 'click', function(){ var ta = U.$('keysIn'); if (ta) ta.value = ''; STATE.keys = []; Keys.save([]); Keys.render(); var km = U.$('keyMask'); if (km) km.classList.add('hide'); if (ta) ta.classList.remove('hide'); setKeyStatus('Aucune clé', 'warn'); var ki = U.$('keyInfo'); if (ki){ ki.textContent = '—'; ki.style.color = '#666'; } });
+safeOn('saveSetBtn', 'click', function(){
+  CONFIG.API = (U.$('setApi').value || '').trim() || DEFAULTS.API;
+  CONFIG.MODEL_TEXT = (U.$('setModelText').value || '').trim() || DEFAULTS.MODEL_TEXT;
+  CONFIG.RPM_PER_KEY = U.clamp(U.$('setRpm').value, 1, 60);
+  CONFIG.MAX_WORKERS = U.clamp(U.$('setMaxWorkers').value, 1, 8);
+  CONFIG.PROBE_DEPTH = U.$('setProbeDepth').value;
+  CONFIG.DOMAINS = (U.$('setDomains').value || '').trim();
+  CONFIG.BLIND_MIN = U.clamp(U.$('setBlindMin').value, 0, 10);
+  CONFIG.CRITIC_ENABLED = U.$('setCriticEnabled').value === '1';
+  CONFIG.CRITIC_MIN = U.clamp(U.$('setCriticMin').value, 0, 10);
+  CONFIG.PATCH_SAMPLES = U.clamp(U.$('setPatchSamples').value, 3, 50);
+  CONFIG.PATCH_DELTA = U.clamp(U.$('setPatchDelta').value, 0, 2);
+  CONFIG.W_AUTO = U.clamp(U.$('setWAuto').value, 0, 1);
+  CONFIG.W_EXT = U.clamp(U.$('setWExt').value, 0, 1);
+  CONFIG.W_HUMAN = U.clamp(U.$('setWHuman').value, 0, 1);
+  CONFIG.CIRCUIT_THRESHOLD = U.clamp(U.$('setCircuitThreshold').value, 0.05, 0.5);
+  CONFIG.WIKI_ENABLED = U.$('setWikiEnabled').value === '1';
+  CONFIG.ARXIV_ENABLED = U.$('setArxivEnabled').value === '1';
+  CONFIG.PERSIST = U.$('setPersist').value === '1';
+  try { localStorage.setItem(DEFAULTS.LS_SET, JSON.stringify(CONFIG)); } catch(e){}
+  toast('Enregistré', 'ok');
+});
+safeOn('btnExportAll', 'click', function(){ downloadJSON('anvil-full.json', { generatedAt: U.iso(), config: CONFIG, state: { probes: STATE.probes, blindSpots: STATE.blindSpots, patches: STATE.patches, experiences: STATE.experiences, critiques: STATE.critiques, metaJournal: STATE.metaJournal, domains: STATE.domains, userFeedback: STATE.userFeedback }, promptStore: PromptStore.data }); });
+safeOn('btnExportPatches', 'click', function(){ downloadJSON('anvil-patches.json', { patches: STATE.patches, promptVersions: PromptStore.stats(), metaJournal: STATE.metaJournal }); });
+safeOn('btnExportJournal', 'click', function(){ downloadJSON('anvil-journal.json', { experiences: STATE.experiences, metaJournal: STATE.metaJournal, critiques: STATE.critiques }); });
+safeOn('btnResetAll', 'click', function(){
+  if (!confirm('Effacer TOUTES les données ? Les clés API sont conservées.')) return;
+  var stores = ['probes','blindSpots','patches','experiences','critiques','metaJournal'];
+  Promise.all(stores.map(function(s){ return DB.clear(s).catch(function(){}); })).then(function(){
+    STATE.probes = []; STATE.blindSpots = []; STATE.patches = []; STATE.experiences = []; STATE.critiques = []; STATE.metaJournal = []; STATE.userFeedback = {};
+    STATE.probeCount = 0; STATE.experienceCounter = 0; STATE.patchCounter = 0; STATE.promotedPatches = 0; STATE.refutedCount = 0; STATE.circuitBreakerHits = 0;
+    ['sProbes','sBlind','sPatches','sPromoted','sRefuted','sCrit','sExp','sSupported','sCB','sFeedback'].forEach(function(id){ UI.setText(id, '0'); });
+    toast('Tout effacé', 'ok');
+  });
+});
+safeOn('modalClose', 'click', Modal.close);
+safeOn('modalBk', 'click', function(e){ if (e.target && e.target.id === 'modalBk') Modal.close(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') Modal.close(); });
+
+/* ============================================================
+   INIT
+============================================================ */
+(async function init(){
+  try {
+    console.log('[init] AGNES·Anvil démarrage');
+    setBanner('⏳ Initialisation…');
+    if (CONFIG.PERSIST) await Storage.requestPersist();
+    await PromptStore.load();
+    var ks = Keys.load();
+    if (ks.length){
+      STATE.keys = ks.map(function(k){ return { key: k, cool: 0, last: 0, n: 0, busy: 0, errors: 0, active: true }; });
+      var ta = U.$('keysIn'); if (ta) ta.classList.add('hide');
+      var km = U.$('keyMask'); if (km) km.classList.remove('hide');
+      var kmt = U.$('keyMaskTxt'); if (kmt) kmt.textContent = ks.map(function(k){ return k.slice(0, 6) + '…' + k.slice(-3); }).join('  ·  ');
+      setKeyStatus(ks.length + ' clé(s) restaurée(s) · ' + (ks.length * CONFIG.RPM_PER_KEY) + ' req/min', 'ok');
+      var ki = U.$('keyInfo'); if (ki){ ki.textContent = ks.length + ' clé(s)'; ki.style.color = '#4cc38a'; }
+    }
+    Keys.render();
+    try {
+      var ps = await DB.all('probes'); if (ps.length){ STATE.probes = ps; STATE.probeCount = ps.length; }
+      var bs = await DB.all('blindSpots'); if (bs.length) STATE.blindSpots = bs;
+      var pt = await DB.all('patches'); if (pt.length){ STATE.patches = pt; STATE.patchCounter = pt.length; }
+      var ex = await DB.all('experiences'); if (ex.length){ STATE.experiences = ex; STATE.experienceCounter = ex.length; }
+      var cr = await DB.all('critiques'); if (cr.length) STATE.critiques = cr;
+      var mj = await DB.all('metaJournal'); if (mj.length) STATE.metaJournal = mj;
+      var uf = await DB.all('userFeedback');
+      if (uf.length) uf.forEach(function(f){ STATE.userFeedback[f.id] = { value: f.value, time: f.time }; });
+    } catch(e){ console.warn('[init] DB restore', e); }
+    UI.setText('sProbes', String(STATE.probes.length));
+    UI.setText('sBlind', String(STATE.blindSpots.length));
+    UI.setText('sPatches', String(STATE.patches.length));
+    UI.setText('sExp', String(STATE.experiences.filter(function(e){ return e.status === 'ouverte'; }).length));
+    UI.setText('sCrit', String(STATE.critiques.length));
+    UI.setText('sFeedback', String(Object.keys(STATE.userFeedback).length));
+    updateTabBadges(); updateCtl();
+    UI.say('AGNES·Anvil', 'Prêt. Valide tes clés, clique <strong>Tester</strong>, puis <strong>Valider</strong>, puis <strong>LANCER LA FORGE</strong>.', 'valid');
+    UI.say('AGNES·Anvil', 'Le système va sonder un modèle, détecter ses angles morts, générer des tests adversariaux, arbitrer avec la critique + l\'ancrage externe, proposer des patchs et les A/B tester. Seuls les patchs qui passent <em>toutes</em> les épreuves sont promus.', 'meta');
+    setBanner('✓ Prêt', '');
+    if (STATE.keys.length){ setTimeout(function(){ try { startEngine(); } catch(e){ console.error(e); } }, 2000); }
+    setInterval(function(){ if (STATE.freezeUI) return; try { Keys.render(); Renderer.conv(); updateTabBadges(); } catch(e){ console.error(e); } }, 3000);
+    setInterval(function(){ if (!CONFIG.WIKI_ENABLED && !CONFIG.ARXIV_ENABLED) return; Anchor.probeAll().catch(function(){}); }, 3600000);
+    console.log('[init] ✓ Terminé');
+  } catch(e){ console.error('[init] ERREUR', e); setBanner('❌ Erreur init : ' + e.message, 'err'); toast('Erreur init : ' + e.message, 'err'); }
+})();
+</script>
+</body>
+</html>
